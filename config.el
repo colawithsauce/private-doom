@@ -33,7 +33,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'modus-vivendi-deuteranopia)
+(setq doom-theme 'doom-one-light)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -115,32 +115,39 @@
 ;; Cuda
 (add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
 
-(require 'yasnippet)
-(yas-global-mode 1)
+;; ;; lsp-bridge
+;; (use-package lsp-bridge
+;;   :config
+;;   (require 'yasnippet)
+;;   (yas-global-mode 1)
 
-(require 'lsp-bridge)
-(global-lsp-bridge-mode)
-(setq lsp-bridge-c-lsp-server "clangd")
-(setq acm-enable-yas nil)
-(setq lsp-bridge-signature-show-function 'lsp-bridge-signature-posframe)
-(map!
- :mode prog-mode
- (:leader
-  :desc "Rename symbol" "cr" #'lsp-bridge-rename
-  :desc "Diagnostics list" "cx" #'lsp-bridge-diagnostic-list
-  :desc "Code actions" "ca" #'lsp-bridge-code-action
-  :desc "Format document" "cf" #'lsp-bridge-code-format))
+;;   (require 'lsp-bridge)
+;;   (global-lsp-bridge-mode)
+;;   (setq lsp-bridge-c-lsp-server "clangd")
+;;   (setq acm-enable-yas nil)
+;;   (setq acm-enable-tabnine nil)
+;;   (setq acm-enable-codeium t)
+;;   ;; (setq lsp-bridge-signature-show-function 'lsp-bridge-signature-posframe)
+;;   (setq lsp-bridge-enable-hover-diagnostic t)
+;;   (map!
+;;    :mode prog-mode
+;;    (:leader
+;;     :desc "Rename symbol" "cr" #'lsp-bridge-rename
+;;     :desc "Diagnostics list" "cx" #'lsp-bridge-diagnostic-list
+;;     :desc "Code actions" "ca" #'lsp-bridge-code-action
+;;     :desc "Format document" "cf" #'lsp-bridge-code-format))
 
-(add-to-list '+lookup-definition-functions #'lsp-bridge-find-def)
-(add-to-list '+lookup-implementations-functions #'lsp-bridge-find-impl)
-(add-to-list '+lookup-references-functions #'lsp-bridge-find-references)
-(add-to-list '+lookup-type-definition-functions #'lsp-bridge-find-type-def)
-(add-to-list '+lookup-documentation-functions #'lsp-bridge-popup-documentation)
+;;   (add-to-list '+lookup-definition-functions #'lsp-bridge-find-def)
+;;   (add-to-list '+lookup-implementations-functions #'lsp-bridge-find-impl)
+;;   (add-to-list '+lookup-references-functions #'lsp-bridge-find-references)
+;;   (add-to-list '+lookup-type-definition-functions #'lsp-bridge-find-type-def)
+;;   (add-to-list '+lookup-documentation-functions #'lsp-bridge-popup-documentation)
 
 
-(unless (display-graphic-p)
-  (with-eval-after-load 'acm
-    (require 'acm-terminal)))
+;;   (unless (display-graphic-p)
+;;     (with-eval-after-load 'acm
+;;       (require 'acm-terminal))))
+
 
 (use-package! rime
   :custom

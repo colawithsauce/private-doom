@@ -66,3 +66,7 @@
 (package! company-tabnine)
 (package! cuda-mode :disable t)
 (package! rime)
+
+(package! nerd-icons)
+(package! doom-modeline
+  :recipe (:host github :repo "seagle0128/doom-modeline" :branch "feat/nerd-icons"))
