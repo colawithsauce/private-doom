@@ -21,9 +21,11 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-(setq doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size 25)
-      doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size 25)
-      doom-unicode-font (font-spec :family  "LXGW WenKai Mono" :size 25))
+(setq
+ my-font-size 20
+ doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size)
+ doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size)
+ doom-unicode-font (font-spec :family  "LXGW WenKai Mono" :size my-font-size))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -33,7 +35,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one-light)
+(setq doom-theme 'doom-gruvbox)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -41,7 +43,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "/mnt/c/Users/colawithsauce/OneDrive/文档/Notes/")
+(setq org-directory "~/Projects/private-notes/")
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
