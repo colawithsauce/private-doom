@@ -43,7 +43,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Projects/private-notes/")
+(setq org-directory "~/Org/")
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
@@ -114,11 +114,44 @@
       (raise-frame)
       (select-frame-set-input-focus (selected-frame)))))
 
+;; From https://github.com/hlissner/.doom.d
+(map! (:after evil-org
+       :map evil-org-mode-map
+       :n "gk" (cmd! (if (org-on-heading-p)
+                         (org-backward-element)
+                       (evil-previous-visual-line)))
+       :n "gj" (cmd! (if (org-on-heading-p)
+                         (org-forward-element)
+                       (evil-next-visual-line))))
+
+      :o "o" #'evil-inner-symbol)
+
+(map! (:after evil-markdown
+       :map evil-markdown-mode-map
+       :i "M-b" #'backward-word
+       :n "gk" (cmd! (if (markdown-on-heading-p)
+                         (markdown-backward-same-level)
+                       (evil-previous-visual-line)))
+       :n "gj" (cmd! (if (markdown-on-heading-p)
+                         (markdown-forward-same-level)
+                       (evil-next-visual-line)))))
+
+(with-eval-after-load 'org-roam
+  (setq org-roam-capture-templates
+        '(("d" "default" plain "%?" :target
+           (file+head "${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t))))
+
 ;; Cuda
 (add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
+(setq gud-gdb-command-name "cuda-gdb annotate=3")
+
+;; Cursor
+(setq evil-insert-state-cursor 'box)
 
 ;; ;; lsp-bridge
 ;; (use-package lsp-bridge
+;;   ;; :delight (lsp-bridge-mode "")
 ;;   :config
 ;;   (require 'yasnippet)
 ;;   (yas-global-mode 1)
