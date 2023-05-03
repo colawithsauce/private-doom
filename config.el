@@ -142,6 +142,9 @@
            (file+head "${slug}.org" "#+title: ${title}\n")
            :unnarrowed t))))
 
+(with-eval-after-load 'citar
+  (setq citar-bibliography "~/Projects/private-notes/refs.bib"))
+
 ;; Cuda
 (add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
 (setq gud-gdb-command-name "cuda-gdb annotate=3")
