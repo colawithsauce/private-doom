@@ -50,8 +50,11 @@
 ;(unpin! t)
 
 (package! ef-themes)
-(package! nerd-icons-completion
-  :recipe (:host github :repo "rainstormstudio/nerd-icons-completion"))
+;; (package! nerd-icons-completion
+;;   :recipe (:host github :repo "rainstormstudio/nerd-icons-completion"))
+;; (package! nerd-icons)
+;; (package! doom-modeline
+;;   :recipe (:host github :repo "seagle0128/doom-modeline" :branch "feat/nerd-icons"))
 
 (package! yasnippet)
 
@@ -71,6 +74,3 @@
 (package! cuda-mode :disable t)
 (package! rime)
 
-(package! nerd-icons)
-(package! doom-modeline
-  :recipe (:host github :repo "seagle0128/doom-modeline" :branch "feat/nerd-icons"))
