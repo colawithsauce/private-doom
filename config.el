@@ -149,10 +149,13 @@
 (add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
 (setq gud-gdb-command-name "cuda-gdb annotate=3")
 
-;; Cursor
+;; UI
 (setq evil-insert-state-cursor 'box)
 (after! lsp-mode
   (add-hook! 'lsp-mode-hook #'lsp-headerline-breadcrumb-mode))
+(use-package! nerd-icons-completion
+  :config
+  (nerd-icons-completion-mode))
 
 ;; ;; lsp-bridge
 ;; (use-package lsp-bridge

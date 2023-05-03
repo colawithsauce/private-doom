@@ -50,6 +50,8 @@
 ;(unpin! t)
 
 (package! ef-themes)
+(package! nerd-icons-completion
+  :recipe (:host github :repo "rainstormstudio/nerd-icons-completion"))
 
 (package! yasnippet)
 
