@@ -23,9 +23,9 @@
 ;;
 (setq
  my-font-size 20
- doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size)
- doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size)
- doom-unicode-font (font-spec :family  "LXGW WenKai Mono" :size my-font-size))
+ doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'light)
+ doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'light)
+ doom-unicode-font (font-spec :family  "LXGW WenKai Mono" :size my-font-size :weight 'light))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -35,7 +35,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'ef-light)
+(setq doom-theme 'ef-tritanopia-dark)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -152,7 +152,13 @@
 ;; UI
 (setq evil-insert-state-cursor 'box)
 (after! lsp-mode
-  (add-hook! 'lsp-mode-hook #'lsp-headerline-breadcrumb-mode))
+  (add-hook! 'lsp-mode-hook
+             (lambda ()
+               (when (display-graphic-p)
+                 (lsp-headerline-breadcrumb-mode)))))
+(use-package! treemacs
+  :init
+  (setq +treemacs-git-mode 'deferred))
 
 ;; ;; lsp-bridge
 ;; (use-package lsp-bridge
