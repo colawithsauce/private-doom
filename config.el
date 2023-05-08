@@ -22,10 +22,10 @@
 ;; accept. For example:
 ;;
 (setq
- my-font-size 20
- doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'light)
- doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'light)
- doom-unicode-font (font-spec :family  "LXGW WenKai Mono" :size my-font-size :weight 'light))
+ my-font-size 18
+ doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
+ doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
+ doom-unicode-font (font-spec :family  "LXGW WenKai Mono" :size my-font-size :weight 'semilight))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -35,7 +35,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'ef-tritanopia-dark)
+(setq doom-theme 'ef-spring)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -158,7 +158,10 @@
                  (lsp-headerline-breadcrumb-mode)))))
 (use-package! treemacs
   :init
-  (setq +treemacs-git-mode 'deferred))
+  (setq +treemacs-git-mode 'deferred)
+  :config
+  (treemacs-tag-follow-mode)
+  (treemacs-project-follow-mode))
 
 ;; ;; lsp-bridge
 ;; (use-package lsp-bridge

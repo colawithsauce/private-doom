@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: quicktest
+# uuid:
+# key: qqtst
+# condition: t
+# --
+
+# Test $1
+add_executable(test_$1 "test_$1.cpp")
+target_link_libraries(test_$1 GTest::gtest_main Threads::Threads)
+gtest_discover_tests(test_$1)
+$0
