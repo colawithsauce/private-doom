@@ -35,7 +35,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'ef-spring)
+(setq doom-theme 'doom-gruvbox)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -158,10 +158,25 @@
                  (lsp-headerline-breadcrumb-mode)))))
 (use-package! treemacs
   :init
-  (setq +treemacs-git-mode 'deferred)
+  (setq +treemacs-git-mode 'extended)
   :config
-  (treemacs-tag-follow-mode)
+  ;; buggy
+  ;; (treemacs-tag-follow-mode)
   (treemacs-project-follow-mode))
+
+;; Tabnine
+(use-package! company-tabnine
+  :after company
+  :config
+  (after! company
+    (setq +lsp-company-backends '(company-tabnine :separate company-capf company-yasnippet))
+    (setq company-show-numbers t)
+    (setq company-idle-delay 0)))
+
+(use-package! company
+  :custom
+  (company-tooltip-minimum-width 100)
+  (company-tooltip-maximum-width 100))
 
 ;; ;; lsp-bridge
 ;; (use-package lsp-bridge
