@@ -46,6 +46,13 @@
 (setq org-directory "~/Org/")
 
 
+(setq url-gateway-local-host-regexp
+      (concat "\\`" (regexp-opt '("localhost" "127.0.0.1")) "\\'"))
+(setq url-proxy-services
+      '(("no_proxy" . "^\\(localhost\\|10\\..*\\|192\\.168\\..*\\)")
+        ("http" . "127.0.0.1:7890")
+        ("https" . "127.0.0.1:7890")))
+
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;
@@ -163,6 +170,11 @@
   ;; buggy
   ;; (treemacs-tag-follow-mode)
   (treemacs-project-follow-mode))
+
+(after! eglot
+  (use-package! breadcrumb
+    :config
+    (breadcrumb-mode)))
 
 ;; Tabnine
 (use-package! company-tabnine

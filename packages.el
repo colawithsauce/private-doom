@@ -71,4 +71,7 @@
 (package! company-tabnine)
 (package! cuda-mode :disable t)
 (package! rime)
-
+;; (package! telega)
+(package! breadcrumb
+  :recipe (:host github
+           :repo "joaotavora/breadcrumb"))
