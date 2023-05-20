@@ -23,9 +23,18 @@
 ;;
 (setq
  my-font-size 18
- doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
- doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
- doom-unicode-font (font-spec :family  "LXGW WenKai Mono" :size my-font-size :weight 'semilight))
+ ;; doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
+ doom-font (font-spec :family "IBM Plex Mono" :size my-font-size)
+ ;; doom-font (font-spec :family "Latin Modern Mono" :size my-font-size)
+ ;; doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
+ doom-variable-pitch-font (font-spec :family "IBM Plex Sans" :size my-font-size)
+ doom-unicode-font (font-spec :family  "Noto Color Emoji" :size my-font-size :weight 'semilight))
+
+(defun my-cjk-font()
+  (dolist (charset '(kana han cjk-misc symbol bopomofo))
+    (set-fontset-font t charset (font-spec :family "LXGW WenKai Mono"))))
+
+(add-hook! 'after-setting-font-hook #'my-cjk-font)
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -159,7 +168,7 @@
 ;; UI
 (setq evil-insert-state-cursor 'box)
 (after! lsp-mode
-  (add-hook! 'lsp-mode-hook
+  (add-hook! '(python-mode c-mode c++-mode)
              (lambda ()
                (when (display-graphic-p)
                  (lsp-headerline-breadcrumb-mode)))))
@@ -176,14 +185,14 @@
     :config
     (breadcrumb-mode)))
 
-;; Tabnine
-(use-package! company-tabnine
-  :after company
-  :config
-  (after! company
-    (setq +lsp-company-backends '(company-tabnine :separate company-capf company-yasnippet))
-    (setq company-show-numbers t)
-    (setq company-idle-delay 0)))
+;; ;; Tabnine
+;; (use-package! company-tabnine
+;;   :after company
+;;   :config
+;;   (after! company
+;;     (setq +lsp-company-backends '(company-tabnine :separate company-capf company-yasnippet))
+;;     (setq company-show-numbers t)
+;;     (setq company-idle-delay 0)))
 
 (use-package! company
   :custom
@@ -224,6 +233,7 @@
 ;;     (with-eval-after-load 'acm
 ;;       (require 'acm-terminal))))
 
+(c-set-offset 'innamespace 0)
 
 (use-package! rime
   :custom

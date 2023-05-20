@@ -68,7 +68,7 @@
 ;;   (package! acm-terminal
 ;;     :recipe (:host github :repo "twlz0ne/acm-terminal")))
 
-(package! company-tabnine)
+;; (package! company-tabnine)
 (package! cuda-mode :disable t)
 (package! rime)
 ;; (package! telega)
