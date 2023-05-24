@@ -23,12 +23,12 @@
 ;;
 (setq
  my-font-size 18
- ;; doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
- doom-font (font-spec :family "IBM Plex Mono" :size my-font-size)
+ doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
+ ;; doom-font (font-spec :family "BlexMono Nerd Font Mono" :size my-font-size)
  ;; doom-font (font-spec :family "Latin Modern Mono" :size my-font-size)
- ;; doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
- doom-variable-pitch-font (font-spec :family "IBM Plex Sans" :size my-font-size)
- doom-unicode-font (font-spec :family  "Noto Color Emoji" :size my-font-size :weight 'semilight))
+ doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
+ ;; doom-variable-pitch-font (font-spec :family "BlexMono Nerd Font" :size my-font-size)
+ doom-unicode-font (font-spec :family  "Twitter Color Emoji" :size my-font-size :weight 'semilight))
 
 (defun my-cjk-font()
   (dolist (charset '(kana han cjk-misc symbol bopomofo))
@@ -194,14 +194,12 @@
 ;;     (setq company-show-numbers t)
 ;;     (setq company-idle-delay 0)))
 
-(use-package! company
-  :custom
-  (company-tooltip-minimum-width 100)
-  (company-tooltip-maximum-width 100))
+(after! company
+  (setq company-tooltip-minimum-width 100)
+  (setq company-tooltip-maximum-width 100))
 
 ;; ;; lsp-bridge
 ;; (use-package lsp-bridge
-;;   ;; :delight (lsp-bridge-mode "")
 ;;   :config
 ;;   (require 'yasnippet)
 ;;   (yas-global-mode 1)
@@ -234,6 +232,11 @@
 ;;       (require 'acm-terminal))))
 
 (c-set-offset 'innamespace 0)
+(defun my-before-switch-term (&rest r)
+    (when (doom-project-root)
+      (cd (doom-project-root))))
+(advice-add '+term/toggle :before #'my-before-switch-term)
+(advice-add '+term/here :before #'my-before-switch-term)
 
 (use-package! rime
   :custom
