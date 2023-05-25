@@ -22,12 +22,12 @@
 ;; accept. For example:
 ;;
 (setq
- my-font-size 18
- doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
+ my-font-size 20
+ ;; doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
  ;; doom-font (font-spec :family "BlexMono Nerd Font Mono" :size my-font-size)
- ;; doom-font (font-spec :family "Latin Modern Mono" :size my-font-size)
- doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
- ;; doom-variable-pitch-font (font-spec :family "BlexMono Nerd Font" :size my-font-size)
+ doom-font (font-spec :family "Latin Modern Mono" :size my-font-size)
+ ;; doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
+ doom-variable-pitch-font (font-spec :family "BlexMono Nerd Font" :size my-font-size)
  doom-unicode-font (font-spec :family  "Twitter Color Emoji" :size my-font-size :weight 'semilight))
 
 (defun my-cjk-font()
@@ -44,7 +44,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-gruvbox)
+(setq doom-theme 'doom-one-light)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -168,10 +168,12 @@
 ;; UI
 (setq evil-insert-state-cursor 'box)
 (after! lsp-mode
-  (add-hook! '(python-mode c-mode c++-mode)
-             (lambda ()
-               (when (display-graphic-p)
-                 (lsp-headerline-breadcrumb-mode)))))
+  (add-hook! '(python-mode c-mode c++-mode rustic-mode)
+             (when (display-graphic-p)
+                 (lsp-headerline-breadcrumb-mode)))
+  (add-hook! rustic-mode
+             (cmd! (lsp-rust-analyzer-inlay-hints-mode t)
+                   (setq-local lsp-rust-analyzer-server-display-inlay-hints t))))
 (use-package! treemacs
   :init
   (setq +treemacs-git-mode 'extended)
@@ -232,11 +234,14 @@
 ;;       (require 'acm-terminal))))
 
 (c-set-offset 'innamespace 0)
+
 (defun my-before-switch-term (&rest r)
     (when (doom-project-root)
       (cd (doom-project-root))))
 (advice-add '+term/toggle :before #'my-before-switch-term)
 (advice-add '+term/here :before #'my-before-switch-term)
+
+(add-hook! org-mode (setq-local word-wrap-by-category t))
 
 (use-package! rime
   :custom
