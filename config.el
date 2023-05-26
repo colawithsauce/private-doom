@@ -22,10 +22,10 @@
 ;; accept. For example:
 ;;
 (setq
- my-font-size 20
+ my-font-size 22
  ;; doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
  ;; doom-font (font-spec :family "BlexMono Nerd Font Mono" :size my-font-size)
- doom-font (font-spec :family "Latin Modern Mono" :size my-font-size)
+ doom-font (font-spec :family "VictorMono NFM" :size my-font-size)
  ;; doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
  doom-variable-pitch-font (font-spec :family "BlexMono Nerd Font" :size my-font-size)
  doom-unicode-font (font-spec :family  "Twitter Color Emoji" :size my-font-size :weight 'semilight))
@@ -200,38 +200,38 @@
   (setq company-tooltip-minimum-width 100)
   (setq company-tooltip-maximum-width 100))
 
-;; ;; lsp-bridge
-;; (use-package lsp-bridge
-;;   :config
-;;   (require 'yasnippet)
-;;   (yas-global-mode 1)
+;; lsp-bridge
+(unless (featurep! :tools lsp)
+  (use-package! lsp-bridge
+    :config
+    (require 'yasnippet)
+    (yas-global-mode 1)
 
-;;   (require 'lsp-bridge)
-;;   (global-lsp-bridge-mode)
-;;   (setq lsp-bridge-c-lsp-server "clangd")
-;;   (setq acm-enable-yas nil)
-;;   (setq acm-enable-tabnine nil)
-;;   (setq acm-enable-codeium t)
-;;   ;; (setq lsp-bridge-signature-show-function 'lsp-bridge-signature-posframe)
-;;   (setq lsp-bridge-enable-hover-diagnostic t)
-;;   (map!
-;;    :mode prog-mode
-;;    (:leader
-;;     :desc "Rename symbol" "cr" #'lsp-bridge-rename
-;;     :desc "Diagnostics list" "cx" #'lsp-bridge-diagnostic-list
-;;     :desc "Code actions" "ca" #'lsp-bridge-code-action
-;;     :desc "Format document" "cf" #'lsp-bridge-code-format))
+    (require 'lsp-bridge)
+    (global-lsp-bridge-mode)
+    (setq lsp-bridge-c-lsp-server "clangd")
+    (setq acm-enable-yas nil)
+    (setq acm-enable-tabnine nil)
+    (setq acm-enable-codeium t)
+    ;; (setq lsp-bridge-signature-show-function 'lsp-bridge-signature-posframe)
+    (setq lsp-bridge-enable-hover-diagnostic t)
+    (map!
+     :mode prog-mode
+     (:leader
+      :desc "Rename symbol" "cr" #'lsp-bridge-rename
+      :desc "Diagnostics list" "cx" #'lsp-bridge-diagnostic-list
+      :desc "Code actions" "ca" #'lsp-bridge-code-action
+      :desc "Format document" "cf" #'lsp-bridge-code-format))
 
-;;   (add-to-list '+lookup-definition-functions #'lsp-bridge-find-def)
-;;   (add-to-list '+lookup-implementations-functions #'lsp-bridge-find-impl)
-;;   (add-to-list '+lookup-references-functions #'lsp-bridge-find-references)
-;;   (add-to-list '+lookup-type-definition-functions #'lsp-bridge-find-type-def)
-;;   (add-to-list '+lookup-documentation-functions #'lsp-bridge-popup-documentation)
+    (add-to-list '+lookup-definition-functions #'lsp-bridge-find-def)
+    (add-to-list '+lookup-implementations-functions #'lsp-bridge-find-impl)
+    (add-to-list '+lookup-references-functions #'lsp-bridge-find-references)
+    (add-to-list '+lookup-type-definition-functions #'lsp-bridge-find-type-def)
+    (add-to-list '+lookup-documentation-functions #'lsp-bridge-popup-documentation)
 
-
-;;   (unless (display-graphic-p)
-;;     (with-eval-after-load 'acm
-;;       (require 'acm-terminal))))
+    (unless (display-graphic-p)
+      (with-eval-after-load 'acm
+        (require 'acm-terminal)))))
 
 (c-set-offset 'innamespace 0)
 

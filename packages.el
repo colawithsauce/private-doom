@@ -55,18 +55,18 @@
 (package! nerd-icons)
 (unpin! doom-modeline)
 
-;; ;; lsp-bridge
-;; (package! yasnippet)
-;; (package! lsp-bridge
-;;   :recipe (:host github
-;;            :repo "manateelazycat/lsp-bridge"
-;;            :files ("*.el" "*.py" "acm" "core" "langserver"
-;;                    "multiserver" "resources")))
-;; (unless (display-graphic-p)
-;;   (package! popon
-;;     :recipe (:host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
-;;   (package! acm-terminal
-;;     :recipe (:host github :repo "twlz0ne/acm-terminal")))
+;; lsp-bridge
+(package! yasnippet)
+(package! lsp-bridge
+  :recipe (:host github
+           :repo "manateelazycat/lsp-bridge"
+           :files ("*.el" "*.py" "acm" "core" "langserver"
+                   "multiserver" "resources")))
+(unless (display-graphic-p)
+  (package! popon
+    :recipe (:host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
+  (package! acm-terminal
+    :recipe (:host github :repo "twlz0ne/acm-terminal")))
 
 ;; (package! company-tabnine)
 (package! cuda-mode :disable t)

@@ -96,8 +96,8 @@
        ;;gist              ; interacting with github gists
        (lookup +dictionary
                -offline)              ; navigate your code and its documentation
-       (lsp +peek
-            -eglot)               ; M-x vscode
+       (lsp -peek
+            +eglot)               ; M-x vscode
        (magit +forge)             ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
        ;;pass              ; password manager for nerds
