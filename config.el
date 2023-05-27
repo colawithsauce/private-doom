@@ -201,7 +201,7 @@
   (setq company-tooltip-maximum-width 100))
 
 ;; lsp-bridge
-(unless (featurep! :tools lsp)
+(unless (modulep! :tools lsp)
   (use-package! lsp-bridge
     :config
     (require 'yasnippet)
