@@ -44,7 +44,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one-light)
+(setq doom-theme 'doom-one)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -202,7 +202,8 @@
   (setq +lsp-company-backends '(company-capf :separate company-yasnippet)))
 
 ;; lsp-bridge
-(unless (modulep! :tools lsp)
+(unless (or (modulep! :tools lsp)
+            (modulep! :complete company))
   (use-package! lsp-bridge
     :config
     (require 'yasnippet)
@@ -235,32 +236,34 @@
         (require 'acm-terminal)))))
 
 (defun +display-vga-p ()
-  (not (char-displayable-p ?😠)))
+  (not (char-displayable-p ?里)))
 
 (when (and (+display-vga-p)
            (modulep! :ui modeline +light))
   (general-after-init
-   (add-to-list 'mode-line-misc-info
-                '(flymake-mode
-                  (" ["
-                   flymake-mode-line-error-counter
-                   flymake-mode-line-warning-counter
-                   flymake-mode-line-note-counter
-                   "] "))
-                nil)
-   (setq-default +modeline-format-left
-                 (remove '+modeline-position +modeline-format-left))
-   (setq-default +modeline-format-right
-                 '(""  +modeline-modes
-                   (vc-mode
-                    ("  " "" vc-mode " "))
-                   +modeline-position
-                   mode-line-misc-info
-                   "  " +modeline-encoding
-                   (+modeline-checker
-                    ("" +modeline-checker "   "))))
-   (setq +modeline-position '("  %l:%C  "))
-   (display-battery-mode)))
+    (when (modulep! :tools lsp +eglot)   ; Only needs this for eglot
+      (add-to-list 'mode-line-misc-info
+                   '(flymake-mode
+                     (" ["
+                      flymake-mode-line-error-counter
+                      flymake-mode-line-warning-counter
+                      flymake-mode-line-note-counter
+                      "] "))
+                   nil)
+      (setq eglot--mode-line-format '("Eglot")))
+    (setq-default +modeline-format-left
+                  (remove '+modeline-position +modeline-format-left))
+    (setq-default +modeline-format-right
+                  '(""  +modeline-modes
+                    (vc-mode
+                     ("  " "" vc-mode " "))
+                    mode-line-misc-info
+                    +modeline-position
+                    "  " +modeline-encoding
+                    (+modeline-checker
+                     ("" +modeline-checker "   "))))
+    (setq +modeline-position '("  %l:%C  "))
+    (display-battery-mode)))
 
 (c-set-offset 'innamespace 0)
 
@@ -272,11 +275,19 @@
 
 (add-hook! org-mode (setq-local word-wrap-by-category t))
 
-;; UTF-8 support
-(add-hook! (text-mode prog-mode minibuffer-mode completion-list-mode term-mode)
-           :append
-           (when (+display-vga-p)
-             (glyphless-display-mode)))
+;; VGA support
+(general-after-init
+  (when (+display-vga-p)
+    (set-face-foreground 'glyphless-char
+                         (face-attribute 'default :background))
+    (set-face-background 'glyphless-char
+                         (face-attribute 'default :foreground))
+    (after! company
+      (set-face-background 'company-tooltip-selection
+                           "white"))
+    (after! vertico
+      (set-face-background 'vertico-current
+                           "white"))))
 
 (use-package! rime
   :custom
