@@ -233,6 +233,34 @@
       (with-eval-after-load 'acm
         (require 'acm-terminal)))))
 
+(defun +display-vga-p ()
+  (not (char-displayable-p ?😠)))
+
+(when (and (+display-vga-p)
+           (modulep! :ui modeline +light))
+  (general-after-init
+   (add-to-list 'mode-line-misc-info
+                '(flymake-mode
+                  (" ["
+                   flymake-mode-line-error-counter
+                   flymake-mode-line-warning-counter
+                   flymake-mode-line-note-counter
+                   "] "))
+                nil)
+   (setq-default +modeline-format-left
+                 (remove '+modeline-position +modeline-format-left))
+   (setq-default +modeline-format-right
+                 '(""  +modeline-modes
+                   (vc-mode
+                    ("  " "" vc-mode " "))
+                   +modeline-position
+                   mode-line-misc-info
+                   "  " +modeline-encoding
+                   (+modeline-checker
+                    ("" +modeline-checker "   "))))
+   (setq +modeline-position '("  %l:%C  "))
+   (display-battery-mode)))
+
 (c-set-offset 'innamespace 0)
 
 (defun my-before-switch-term (&rest r)
@@ -242,6 +270,12 @@
 (advice-add '+term/here :before #'my-before-switch-term)
 
 (add-hook! org-mode (setq-local word-wrap-by-category t))
+
+;; UTF-8 support
+(add-hook! (text-mode prog-mode minibuffer-mode completion-list-mode term-mode)
+           :append
+           (when (+display-vga-p)
+             (glyphless-display-mode)))
 
 (use-package! rime
   :custom
