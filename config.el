@@ -278,16 +278,20 @@
 ;; VGA support
 (general-after-init
   (when (+display-vga-p)
-    (set-face-foreground 'glyphless-char
-                         (face-attribute 'default :background))
-    (set-face-background 'glyphless-char
-                         (face-attribute 'default :foreground))
-    (after! company
-      (set-face-background 'company-tooltip-selection
-                           "white"))
-    (after! vertico
-      (set-face-background 'vertico-current
-                           "white"))))
+     (set-face-foreground 'glyphless-char
+                          (face-attribute 'default :background))
+     (set-face-background 'glyphless-char
+                          (face-attribute 'default :foreground))
+     (after! company
+       (set-face-foreground 'company-tooltip-selection
+                            (face-attribute 'tooltip :background))
+       (set-face-background 'company-tooltip-selection
+                            (face-attribute 'tooltip :foreground)))
+     (after! vertico
+       (set-face-foreground 'vertico-current
+                            (face-attribute 'default :background))
+       (set-face-background 'vertico-current
+                            (face-attribute 'default :foreground)))))
 
 (use-package! rime
   :custom
