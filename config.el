@@ -238,7 +238,7 @@
 (defun +display-vga-p ()
   (not (char-displayable-p ?里)))
 
-(when (and (+display-vga-p)
+(when (and (not (display-graphic-p))
            (modulep! :ui modeline +light))
   (general-after-init
     (when (modulep! :tools lsp +eglot)   ; Only needs this for eglot
