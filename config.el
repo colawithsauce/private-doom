@@ -198,7 +198,8 @@
 
 (after! company
   (setq company-tooltip-minimum-width 100)
-  (setq company-tooltip-maximum-width 100))
+  (setq company-tooltip-maximum-width 100)
+  (setq +lsp-company-backends '(company-capf :separate company-yasnippet)))
 
 ;; lsp-bridge
 (unless (modulep! :tools lsp)
