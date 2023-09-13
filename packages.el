@@ -52,21 +52,17 @@
 (package! ef-themes)
 ;; (package! nerd-icons-completion
 ;;   :recipe (:host github :repo "rainstormstudio/nerd-icons-completion"))
-(package! nerd-icons)
-(unpin! doom-modeline)
+;; (package! nerd-icons)
+;; (unpin! doom-modeline)
 
 ;; lsp-bridge
-(package! yasnippet)
 (package! lsp-bridge
-  :recipe (:host github
-           :repo "manateelazycat/lsp-bridge"
-           :files ("*.el" "*.py" "acm" "core" "langserver"
-                   "multiserver" "resources")))
-(unless (display-graphic-p)
-  (package! popon
-    :recipe (:host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
-  (package! acm-terminal
-    :recipe (:host github :repo "twlz0ne/acm-terminal")))
+          :recipe (:host github :repo "manateelazycat/lsp-bridge"
+                         :files ("*")))
+(package! acm :recipe (:host github :repo "manateelazycat/lsp-bridge" :files ("acm")))
+;; 如果没有上面这一行，安装 acm-terminal 的时候 doom sync 会报错，提示找不到 acm 这个包，不装 acm-terminal 不$
+(package! popon)
+(package! acm-terminal :recipe (:host github :repo "twlz0ne/acm-terminal"))
 
 ;; (package! company-tabnine)
 (package! cuda-mode :disable t)
@@ -75,3 +71,15 @@
 (package! breadcrumb
   :recipe (:host github
            :repo "joaotavora/breadcrumb"))
+
+(package! leetcode
+  :recipe (:host github
+           :repo "kaiwk/leetcode.el"))
+
+(package! rime-regexp
+  :recipe (:host github
+           :repo "colawithsauce/rime-regexp.el"))
+
+(package! consult-todo
+  :recipe (:host github
+           :repo "liuyinz/consult-todo"))

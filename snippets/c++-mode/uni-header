@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: uni-header
+# key: bits
+# --
+
+#include <bits/stdc++.h>
+using namespace std;
