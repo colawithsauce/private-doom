@@ -1,0 +1,26 @@
+# -*- mode: snippet -*-
+# name: beamer
+# key: beamer
+# --
+
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [bigger]
+#+AUTHOR: ${1:ZengNian Wen}
+#+BEAMER_HEADER: \institute{${2:SCUT}}
+#+OPTIONS: H:2 toc:nil num:nil \n:t @:t ::t |:t ^:t -:t f:t *:t <:t
+#+BEAMER_THEME: CambridgeUS
+#+BEAMER_COLOR_THEME: default
+#+BEAMER_INNER_THEME: default
+#+LaTeX_CLASS_OPTIONS: [aspectratio=169]
+#+BEAMER_HEADER: \definecolor{links}{HTML}{0000A0}
+#+BEAMER_HEADER: \hypersetup{colorlinks=,linkcolor=,urlcolor=links}
+#+BEAMER_HEADER: \setbeamertemplate{itemize items}[default]
+#+BEAMER_HEADER: \setbeamertemplate{enumerate items}[default]
+#+BEAMER_HEADER: \setbeamertemplate{items}[default]
+#+BEAMER_HEADER: \setbeamercolor*{local structure}{fg=darkred}
+#+BEAMER_HEADER: \setbeamercolor{section in toc}{fg=darkred}
+#+BEAMER_HEADER: \setlength{\parskip}{\smallskipamount}
+#+BEAMER_HEADER: \AtBeginSection{\frame{\sectionpage}}
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+$0

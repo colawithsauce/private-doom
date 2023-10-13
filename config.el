@@ -22,13 +22,13 @@
 ;; accept. For example:
 ;;
 (setq
- my-font-size 26
+ my-font-size 28
  ;; doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
  ;; doom-font (font-spec :family "BlexMono Nerd Font Mono" :size my-font-size)
  doom-font (font-spec :family "Recursive Mono Casual Static" :size my-font-size)
  ;; doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
  doom-variable-pitch-font (font-spec :family "BlexMono Nerd Font" :size my-font-size)
- doom-unicode-font (font-spec :family  "Twitter Color Emoji" :size my-font-size :weight 'semilight))
+ doom-unicode-font (font-spec :family  "Twitter Color Emoji" :size my-font-size))
 
 (defun my-cjk-font()
   (dolist (charset '(kana han cjk-misc symbol bopomofo))
@@ -44,8 +44,8 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
-;; (add-to-list 'default-frame-alist '(alpha-background . 80))
+(setq doom-theme 'doom-monokai-spectrum)
+(add-to-list 'default-frame-alist '(alpha-background . 80))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -153,18 +153,50 @@
                          (markdown-forward-same-level)
                        (evil-next-visual-line)))))
 
+(map! :leader
+      :desc "Slurp sexp" :n ">" #'sp-slurp-hybrid-sexp)
+
 (with-eval-after-load 'org-roam
+  ;; Setting default filename of new roam node.
   (setq org-roam-capture-templates
         '(("d" "default" plain "%?" :target
            (file+head "${slug}.org" "#+title: ${title}\n")
-           :unnarrowed t))))
+           :unnarrowed t)))
+
+  ;; Discard backlinks from dailies
+  (defun my/org-roam-show-backlink-p (backlink)
+    "When the todo state of heading on backlink is not 'kill', return t, else nil."
+    (let* ((source-node (org-roam-backlink-source-node backlink))
+           (target-id (org-roam-node-id (org-roam-backlink-target-node backlink)))
+           (outline (plist-get (org-roam-backlink-properties backlink) :outline))
+           (source-file (org-roam-node-file source-node))
+           (show-backlink-p t))
+      ;; Goto the outline of file
+      (with-temp-buffer
+        (insert-file-contents source-file)
+        (delay-mode-hooks (org-mode))
+        (goto-char 0)
+
+        (while (search-forward target-id nil t)
+          (when (and (equal outline (org-get-outline-path t))
+                     (not (member (org-entry-get (point) "TODO") '("TODO" "STRT" nil))))
+            (setq show-backlink-p nil))))
+      show-backlink-p))
+
+  (setq org-roam-mode-sections
+        '((org-roam-backlinks-section :unique t :show-backlink-p my/org-roam-show-backlink-p)
+          org-roam-reflinks-section))
+
+  ;; https://github.com/org-roam/org-roam/issues/991#issuecomment-882010053
+  (add-to-list 'magit-section-initial-visibility-alist (cons 'org-roam-node-section 'hide)))
 
 (with-eval-after-load 'citar
-  (setq citar-bibliography "~/Projects/private-notes/refs.bib"))
+  (setq citar-bibliography "~/Org/roam/refs.bib")
+  (add-to-list 'citar-notes-paths "~/Org/roam/references"))
 
 ;; Cuda
 (add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
-(setq gud-gdb-command-name "cuda-gdb annotate=3")
+;; (setq gud-gdb-command-name "cuda-gdb annotate=3")
 
 ;; CPP style
 (when (modulep! :lang cc)
@@ -206,13 +238,14 @@
 ;; UI
 (setq evil-insert-state-cursor 'box)
 (after! lsp-mode
-  (setq-default lsp-clients-clangd-args "--header-insertion=never")
-  (add-hook! '(python-mode c-mode c++-mode rustic-mode)
-    (when (display-graphic-p)
-      (lsp-headerline-breadcrumb-mode)))
-  (add-hook! rustic-mode
-    (cmd! (lsp-rust-analyzer-inlay-hints-mode t)
-          (setq-local lsp-rust-analyzer-server-display-inlay-hints t))))
+  (with-eval-after-load 'lsp-clangd
+    (add-to-list 'lsp-clients-clangd-args "--header-insertion=never"))
+
+  (add-hook 'lsp-mode-hook #'lsp-headerline-breadcrumb-mode)
+
+  (dolist (hook '(c++-mode-hook c-mode-hook python-mode-hook rustic-mode-hook))
+    (add-hook hook #'lsp-inlay-hints-mode)))
+
 (use-package! treemacs
   :init
   (setq +treemacs-git-mode 'extended)
@@ -302,31 +335,31 @@
 (defun +display-vga-p ()
   (not (char-displayable-p ?里)))
 
-;; (when (modulep! :ui modeline +light)
-;;   (general-after-init
-;;     (when (modulep! :tools lsp +eglot)   ; Only needs this for eglot
-;;       (add-to-list 'mode-line-misc-info
-;;                    '(flymake-mode
-;;                      (" ["
-;;                       flymake-mode-line-error-counter
-;;                       flymake-mode-line-warning-counter
-;;                       flymake-mode-line-note-counter
-;;                       "] "))
-;;                    nil)
-;;       (setq eglot--mode-line-format '("Eglot")))
-;;     (setq-default +modeline-format-left
-;;                   (remove '+modeline-position +modeline-format-left))
-;;     (setq-default +modeline-format-right
-;;                   '(""  +modeline-modes
-;;                     (vc-mode
-;;                      ("  " "" vc-mode " "))
-;;                     mode-line-misc-info
-;;                     +modeline-position
-;;                     "  " +modeline-encoding
-;;                     (+modeline-checker
-;;                      ("" +modeline-checker "   "))))
-;;     (setq +modeline-position '("  %l:%C  "))
-;;     (display-battery-mode)))
+(when (modulep! :ui modeline +light)
+  (general-after-init
+    (when (modulep! :tools lsp +eglot)   ; Only needs this for eglot
+      (add-to-list 'mode-line-misc-info
+                   '(flymake-mode
+                     (" ["
+                      flymake-mode-line-error-counter
+                      flymake-mode-line-warning-counter
+                      flymake-mode-line-note-counter
+                      "] "))
+                   nil)
+      (setq eglot--mode-line-format '("Eglot")))
+    (setq-default +modeline-format-left
+                  (remove '+modeline-position +modeline-format-left))
+    (setq-default +modeline-format-right
+                  '(""  +modeline-modes
+                    (vc-mode
+                     ("  " "" vc-mode " "))
+                    mode-line-misc-info
+                    +modeline-position
+                    "  " +modeline-encoding
+                    (+modeline-checker
+                     ("" +modeline-checker "   "))))
+    (setq +modeline-position '("  %l:%C  "))
+    (display-battery-mode)))
 
 (c-set-offset 'innamespace 0)
 
@@ -336,13 +369,18 @@
 (advice-add '+term/toggle :before #'my-before-switch-term)
 (advice-add '+term/here :before #'my-before-switch-term)
 
-(add-hook! org-mode (setq-local word-wrap-by-category t))
-(setq-default org-tags-column -80)
-(map! :map org-mode-map
-      :localleader :desc "Remove org-babel result" :n "k" #'org-babel-remove-result-one-or-many)
-(after! elfeed
-  ;; (add-hook 'elfeed-search-mode-hook #'elfeed-update)
-  (setq-default elfeed-search-filter "@1-days-ago +mustread +unread"))
+(with-eval-after-load 'org
+  (add-hook! org-mode (setq-local word-wrap-by-category t))
+  (setq org-tags-column 0)
+  (setq org-startup-folded 'show2levels)
+
+  (setq org-beamer-frame-default-options "")
+
+  ;; (global-org-modern-mode)
+
+  (map! :map org-mode-map
+        :localleader :desc "Remove org-babel result" :n "k" #'org-babel-remove-result-one-or-many)
+  (setf (plist-get org-format-latex-options :scale) 1.3))
 
 (unless (display-graphic-p)
   (defun my/replace-tab ()
@@ -350,21 +388,18 @@
     (if (region-active-p)
         (indent-for-tab-command)
       (better-jumper-jump-forward)))
-  (map! :n "TAB" #'my/replace-tab)
+  (map! :n "TAB" #'my/replace-tab))
 
-  ;; BUG: doom-modeline-core.el L1204 -- doom-modeline-propertize-icon abnormally return nil on terminal
-  (use-package doom-modeline
-    :custom
-    (doom-modeline-icon nil)))
+(use-package! rime
+  :custom
+  (default-input-method "rime")
+  (rime-disable-predicates
+   '(rime-predicate-evil-mode-p)))
 
-(when (display-graphic-p)
-  (use-package! rime
-    :custom
-    (default-input-method "rime")
-    :config
-    (use-package! rime-regexp
-      :config
-      (rime-regexp-mode))))
+(use-package! rime-regexp
+  :after rime
+  :config
+  (rime-regexp-mode))
 
 ;; VGA support
 (general-after-init
@@ -394,7 +429,11 @@
   :config
   (map! :leader :desc "Query todos" :nie"s q" #'consult-todo))
 
-;; (use-package! telega
-;;   :config
-;;   (setq telega-proxies '((:server "localhost" :port 7890 :enable t :type (:@type "proxyTypeSocks5")))))
+(use-package! fanyi
+  :config
+  (map! :leader :desc "Fanyi words" :nie "s y" #'fanyi-dwim2))
 
+(use-package! telega
+  :custom
+  (telega-completing-read-function completing-read-function)
+  (telega-proxies '((:server "localhost" :port 7890 :enable t :type (:@type "proxyTypeSocks5")))))
