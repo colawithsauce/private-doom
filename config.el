@@ -22,7 +22,7 @@
 ;; accept. For example:
 ;;
 (setq
- my-font-size 28
+ my-font-size 20
  ;; doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
  ;; doom-font (font-spec :family "BlexMono Nerd Font Mono" :size my-font-size)
  doom-font (font-spec :family "Recursive Mono Casual Static" :size my-font-size)
@@ -44,8 +44,8 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-monokai-spectrum)
-(add-to-list 'default-frame-alist '(alpha-background . 80))
+(setq doom-theme 'modus-operandi)
+;; (add-to-list 'default-frame-alist '(alpha-background . 90))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -437,3 +437,29 @@
   :custom
   (telega-completing-read-function completing-read-function)
   (telega-proxies '((:server "localhost" :port 7890 :enable t :type (:@type "proxyTypeSocks5")))))
+
+;;; mail
+(setq smtpmail-smtp-server "smtp.qq.com" ;; <-- edit this !!!
+      smtpmail-smtp-service 465 ;; 25 is default -- uncomment and edit if needed
+      smtpmail-stream-type 'ssl
+      message-auto-save-directory "~/.mail/qq.com/Drafts"
+      ;;    smtpmail-debug-info t
+      ;;    smtpmail-debug-verb t
+      message-send-mail-function 'message-smtpmail-send-it)
+
+;; This is an Emacs package that creates graphviz directed graphs from
+;; the headings of an org file
+(use-package org-mind-map
+  :init
+  (require 'ox-org)
+  ;; Uncomment the below if 'ensure-system-packages` is installed
+  :ensure-system-package (gvgen . graphviz)
+  :config
+  (setq org-mind-map-engine "dot")       ; Default. Directed Graph
+  ;; (setq org-mind-map-engine "neato")  ; Undirected Spring Graph
+  ;; (setq org-mind-map-engine "twopi")  ; Radial Layout
+  ;; (setq org-mind-map-engine "fdp")    ; Undirected Spring Force-Directed
+  ;; (setq org-mind-map-engine "sfdp")   ; Multiscale version of fdp for the layout of large graphs
+  ;; (setq org-mind-map-engine "twopi")  ; Radial layouts
+  ;; (setq org-mind-map-engine "circo")  ; Circular Layout
+  )
