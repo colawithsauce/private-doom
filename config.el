@@ -24,8 +24,9 @@
 (setq
  my-font-size 20
  ;; doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
- ;; doom-font (font-spec :family "BlexMono Nerd Font Mono" :size my-font-size)
- doom-font (font-spec :family "Recursive Mono Casual Static" :size my-font-size)
+ ;; doom-font (font-spec :family "SFMono Nerd Font Mono" :size my-font-size :weight 'medium)
+ doom-font (font-spec :family "IBM Plex Mono" :size my-font-size :weight 'medium)
+ ;; doom-font (font-spec :family "Recursive Mono Casual Static" :size my-font-size)
  ;; doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
  doom-variable-pitch-font (font-spec :family "BlexMono Nerd Font" :size my-font-size)
  doom-unicode-font (font-spec :family  "Twitter Color Emoji" :size my-font-size))
@@ -234,6 +235,10 @@
   (when (listp c-default-style)
     (setf (alist-get 'c-mode c-default-style) "cc")
     (setf (alist-get 'c++-mode c-default-style) "cc")))
+
+;; Tramp
+(use-package tramp-container)
+(add-to-list 'tramp-remote-path 'tramp-own-remote-path)
 
 ;; UI
 (setq evil-insert-state-cursor 'box)
