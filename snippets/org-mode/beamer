@@ -6,8 +6,8 @@
 #+startup: beamer
 #+LaTeX_CLASS: beamer
 #+LaTeX_CLASS_OPTIONS: [bigger]
-#+AUTHOR: ${1:ZengNian Wen}
-#+BEAMER_HEADER: \institute{${2:SCUT}}
+#+AUTHOR: ${1:xxx}
+#+BEAMER_HEADER: \institute{${2:xxx}}
 #+OPTIONS: H:2 toc:nil num:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
 #+BEAMER_THEME: CambridgeUS
 #+BEAMER_COLOR_THEME: default
