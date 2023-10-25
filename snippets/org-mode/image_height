@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: imghei
+# key: imghei
+# --
+#+ATTR_LATEX: :height .${1:7}\textheight
+$0

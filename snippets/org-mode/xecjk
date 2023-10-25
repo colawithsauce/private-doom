@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: cjk
+# key: cjk
+# --
+
+#+LATEX_COMPILER: xelatex
+#+LATEX_HEADER: \usepackage{xeCJK}
+#+LATEX_HEADER: \setCJKmainfont{LXGW WenKai}
+#+LATEX_HEADER: \setmainfont{LXGW WenKai}
+$0

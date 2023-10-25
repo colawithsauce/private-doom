@@ -8,7 +8,7 @@
 #+LaTeX_CLASS_OPTIONS: [bigger]
 #+AUTHOR: ${1:ZengNian Wen}
 #+BEAMER_HEADER: \institute{${2:SCUT}}
-#+OPTIONS: H:2 toc:nil num:nil \n:t @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS: H:2 toc:nil num:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
 #+BEAMER_THEME: CambridgeUS
 #+BEAMER_COLOR_THEME: default
 #+BEAMER_INNER_THEME: default

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: imgwid
+# key: imgwid
+# --
+
+#+ATTR_LATEX: :width .${1:6}\textwidth
+$0

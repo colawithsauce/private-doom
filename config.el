@@ -22,7 +22,7 @@
 ;; accept. For example:
 ;;
 (setq
- my-font-size 20
+ my-font-size 24
  ;; doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
  ;; doom-font (font-spec :family "SFMono Nerd Font Mono" :size my-font-size :weight 'medium)
  doom-font (font-spec :family "IBM Plex Mono" :size my-font-size :weight 'medium)
@@ -45,8 +45,8 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'modus-operandi)
-;; (add-to-list 'default-frame-alist '(alpha-background . 90))
+(setq doom-theme 'doom-monokai-classic)
+(add-to-list 'default-frame-alist '(alpha-background . 90))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
