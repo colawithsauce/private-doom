@@ -22,18 +22,18 @@
 ;; accept. For example:
 ;;
 (setq
- my-font-size 24
+ my-font-size 32
  ;; doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
  ;; doom-font (font-spec :family "SFMono Nerd Font Mono" :size my-font-size :weight 'medium)
- doom-font (font-spec :family "IBM Plex Mono" :size my-font-size :weight 'medium)
- ;; doom-font (font-spec :family "Recursive Mono Casual Static" :size my-font-size)
+ ;; doom-font (font-spec :family "IBM Plex Mono" :size my-font-size :weight 'medium)
+ doom-font (font-spec :family "Recursive Mono Casual Static" :size my-font-size)
  ;; doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
  doom-variable-pitch-font (font-spec :family "BlexMono Nerd Font" :size my-font-size)
  doom-unicode-font (font-spec :family  "Twitter Color Emoji" :size my-font-size))
 
 (defun my-cjk-font()
   (dolist (charset '(kana han cjk-misc symbol bopomofo))
-    (set-fontset-font t charset (font-spec :family "LXGW WenKai Mono"))))
+    (set-fontset-font t charset (font-spec :family "LXGW Neo XiHei Screen"))))
 
 (add-hook! 'after-setting-font-hook #'my-cjk-font)
 ;;
@@ -45,8 +45,8 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-monokai-classic)
-(add-to-list 'default-frame-alist '(alpha-background . 90))
+(setq doom-theme 'doom-dark+)
+;; (add-to-list 'default-frame-alist '(alpha-background . 90))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -59,10 +59,10 @@
 
 (setq url-gateway-local-host-regexp
       (concat "\\`" (regexp-opt '("localhost" "127.0.0.1")) "\\'"))
-(setq url-proxy-services
-      '(("no_proxy" . "^\\(localhost\\|10\\..*\\|192\\.168\\..*\\)")
-        ("http" . "127.0.0.1:7890")
-        ("https" . "127.0.0.1:7890")))
+;; (setq url-proxy-services
+;;       '(("no_proxy" . "^\\(localhost\\|10\\..*\\|192\\.168\\..*\\)")
+;;         ("http" . "127.0.0.1:7890")
+;;         ("https" . "127.0.0.1:7890")))
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
@@ -239,15 +239,19 @@
 ;; Tramp
 (use-package tramp-container)
 (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+(setq enable-remote-dir-locals t)
 
 ;; UI
-(setq evil-insert-state-cursor 'box)
+(setq evil-insert-state-cursor 'bar)
 (after! lsp-mode
+  (setq +format-with-lsp nil)
+
   (with-eval-after-load 'lsp-clangd
     (add-to-list 'lsp-clients-clangd-args "--header-insertion=never"))
 
   (add-hook 'lsp-mode-hook #'lsp-headerline-breadcrumb-mode)
 
+  (setq lsp-inlay-hint-enable t)
   (dolist (hook '(c++-mode-hook c-mode-hook python-mode-hook rustic-mode-hook))
     (add-hook hook #'lsp-inlay-hints-mode)))
 
@@ -271,7 +275,7 @@
                     "--cross-file-rename"
                     "--completion-style=detailed"
                     "--pch-storage=memory"
-                    "--header-insertion=never"
+                    ;; "--header-insertion=never"
                     "--header-insertion-decorators=0")))
   (use-package! breadcrumb
     :config
@@ -399,7 +403,10 @@
   :custom
   (default-input-method "rime")
   (rime-disable-predicates
-   '(rime-predicate-evil-mode-p)))
+   '(rime-predicate-evil-mode-p
+     rime-predicate-prog-in-code-p
+     rime-predicate-after-ascii-char-p
+     rime-predicate-space-after-cc-p)))
 
 (use-package! rime-regexp
   :after rime
@@ -438,10 +445,94 @@
   :config
   (map! :leader :desc "Fanyi words" :nie "s y" #'fanyi-dwim2))
 
+;; Pixel scrolling
+(pixel-scroll-precision-mode 1)
+(setq pixel-scroll-precision-interpolate-page t)
+;; (defun +pixel-scroll-interpolate-down (&optional lines)
+;;   (interactive)
+;;   (if lines
+;;       (pixel-scroll-precision-interpolate (* -1 lines (pixel-line-height)))
+;;     (pixel-scroll-interpolate-down)))
+
+;; (defun +pixel-scroll-interpolate-up (&optional lines)
+;;   (interactive)
+;;   (if lines
+;;       (pixel-scroll-precision-interpolate (* lines (pixel-line-height))))
+;;   (pixel-scroll-interpolate-up))
+
+;; (defalias 'scroll-up-command '+pixel-scroll-interpolate-down)
+;; (defalias 'scroll-down-command '+pixel-scroll-interpolate-up)
+
+(use-package! disable-mouse
+  :config
+  (global-disable-mouse-mode)
+  (mapc #'disable-mouse-in-keymap
+        (list evil-motion-state-map
+              evil-normal-state-map
+              evil-visual-state-map
+              evil-insert-state-map)))
+
+(use-package! citre
+  :config
+  (require 'citre-config)
+
+  (map! :leader :desc "Citre peek" :n "c p" #'citre-ace-peek)
+  (map! :leader :desc "Citre update" :n "c u" #'citre-update-this-tags-file)
+
+  ;; Use Citre xref backend as a fallback
+  (define-advice xref--create-fetcher (:around (-fn &rest -args) fallback)
+    (let ((fetcher (apply -fn -args))
+          (citre-fetcher
+           (let ((xref-backend-functions '(citre-xref-backend t)))
+             (apply -fn -args))))
+      (lambda ()
+        (or (with-demoted-errors "%s, fallback to citre"
+              (funcall fetcher))
+            (funcall citre-fetcher)))))
+
+  ;; Combine completions from Citre and lsp/eglot
+  (defmacro citre-backend-to-company-backend (backend)
+    "Create a company backend from Citre completion backend BACKEND.
+The result is a company backend called
+`company-citre-<backend>' (like `company-citre-tags') and can be
+used in `company-backends'."
+    (let ((backend-name (intern (concat "company-citre-" (symbol-name backend))))
+          (docstring (concat "`company-mode' backend from the `"
+                             (symbol-name backend)
+                             "' Citre backend.\n"
+                             "`citre-mode' needs to be enabled to use this.")))
+      `(defun ,backend-name (command &optional arg &rest ignored)
+         ,docstring
+         (pcase command
+           ('interactive (company-begin-backend ',backend-name))
+           ('prefix (and (bound-and-true-p citre-mode)
+                         (citre-backend-usable-p ',backend)
+                         ;; We shouldn't use this as it's defined for getting
+                         ;; definitions/references.  But the Citre completion
+                         ;; backend design is not fully compliant with company's
+                         ;; design so there's no simple "right" solution, and this
+                         ;; works for tags/global backends.
+                         (or (citre-get-symbol-at-point-for-backend ',backend)
+                             'stop)))
+           ('meta (citre-get-property 'signature arg))
+           ('annotation (citre-get-property 'annotation arg))
+           ('candidates (let ((citre-completion-backends '(,backend)))
+                          (all-completions arg (nth 2 (citre-completion-at-point)))))))))
+  (citre-backend-to-company-backend tags)
+  (citre-backend-to-company-backend global)
+  (setq company-backends '((company-capf
+                            company-citre-tags
+                            company-citre-global
+                            :with company-yasnippet
+                            :separate))))
+
 (use-package! telega
   :custom
   (telega-completing-read-function completing-read-function)
-  (telega-proxies '((:server "localhost" :port 7890 :enable t :type (:@type "proxyTypeSocks5")))))
+
+  ;; (telega-proxies '((:server "localhost" :port 7890 :enable t :type (:@type "proxyTypeSocks5"))))
+  :config
+  (add-hook 'telega-chat-mode-hook (lambda () (electric-pair-local-mode -1))))
 
 ;;; mail
 (setq smtpmail-smtp-server "smtp.qq.com" ;; <-- edit this !!!

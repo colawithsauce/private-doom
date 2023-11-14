@@ -49,11 +49,15 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
                                         ;(unpin! t)
 
-(package! nano-theme)
 (package! org-modern)
 (package! nov)
 
 (package! org-mind-map)
+(package! disable-mouse
+  :recipe (:host github :repo "purcell/disable-mouse"))
+
+(package! ccls
+  :disable t)
 
 ;; (package! nerd-icons-completion
 ;;   :recipe (:host github :repo "rainstormstudio/nerd-icons-completion"))
@@ -88,6 +92,10 @@
 (package! consult-todo
   :recipe (:host github
            :repo "liuyinz/consult-todo"))
+
+(package! citre
+  :recipe (:host github
+           :repo "universal-ctags/citre"))
 
 (package! fanyi
   :recipe (:host github
