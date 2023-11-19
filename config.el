@@ -135,34 +135,44 @@
       (let ((f (plist-get (org-protocol-parse-parameters fname nil '(:path)) :path)))
         (find-file (org-protocol-find-file-fix-wsl-path f))
         (raise-frame)
-        (select-frame-set-input-focus (selected-frame))))))
+        (select-frame-set-input-focus (selected-frame)))))
 
-;; From https://github.com/hlissner/.doom.d
-(map! (:after evil-org
-       :map evil-org-mode-map
-       :n "gk" (cmd! (if (org-on-heading-p)
-                         (org-backward-element)
-                       (evil-previous-visual-line)))
-       :n "gj" (cmd! (if (org-on-heading-p)
-                         (org-forward-element)
-                       (evil-next-visual-line))))
+  (setq org-tags-column 0)
+  (setq org-startup-folded 'show2levels)
 
-      :o "o" #'evil-inner-symbol)
+  (setq org-beamer-frame-default-options "")
 
-(map! (:after evil-markdown
-       :map evil-markdown-mode-map
-       :i "M-b" #'backward-word
-       :n "gk" (cmd! (if (markdown-on-heading-p)
-                         (markdown-backward-same-level)
-                       (evil-previous-visual-line)))
-       :n "gj" (cmd! (if (markdown-on-heading-p)
-                         (markdown-forward-same-level)
-                       (evil-next-visual-line)))))
+  ;; (global-org-modern-mode)
+
+  (map! :map org-mode-map
+        :localleader :desc "Remove org-babel result" :n "k" #'org-babel-remove-result-one-or-many)
+  (setf (plist-get org-format-latex-options :scale) 1.3)
+
+
+  ;; From https://github.com/hlissner/.doom.d
+  (map! (:after evil-org
+         :map evil-org-mode-map
+         :n "gk" (cmd! (if (org-on-heading-p)
+                           (org-backward-element)
+                         (evil-previous-visual-line)))
+         :n "gj" (cmd! (if (org-on-heading-p)
+                           (org-forward-element)
+                         (evil-next-visual-line)))))
+
+  (map! (:after evil-markdown
+         :map evil-markdown-mode-map
+         :i "M-b" #'backward-word
+         :n "gk" (cmd! (if (markdown-on-heading-p)
+                           (markdown-backward-same-level)
+                         (evil-previous-visual-line)))
+         :n "gj" (cmd! (if (markdown-on-heading-p)
+                           (markdown-forward-same-level)
+                         (evil-next-visual-line))))))
 
 (map! :leader
       :desc "Slurp sexp" :n ">" #'sp-slurp-hybrid-sexp)
 
-(with-eval-after-load 'org-roam
+(after! org-roam
   ;; Setting default filename of new roam node.
   (setq org-roam-capture-templates
         '(("d" "default" plain "%?" :target
@@ -196,7 +206,8 @@
   ;; https://github.com/org-roam/org-roam/issues/991#issuecomment-882010053
   (add-to-list 'magit-section-initial-visibility-alist (cons 'org-roam-node-section 'hide)))
 
-(with-eval-after-load 'citar
+;; citing system
+(after! citar
   (setq citar-bibliography "~/Org/roam/refs.bib")
   (add-to-list 'citar-notes-paths "~/Org/roam/references"))
 
@@ -206,40 +217,41 @@
 
 ;; CPP style
 (when (modulep! :lang cc)
-  (c-add-style
-   "cc" '((c-comment-only-line-offset . 0)
-          (c-hanging-braces-alist (brace-list-open)
-                                  (brace-entry-open)
-                                  (substatement-open after)
-                                  (block-close . c-snug-do-while)
-                                  (arglist-cont-nonempty))
-          (c-cleanup-list brace-else-brace)
-          (c-offsets-alist
-           (knr-argdecl-intro . 0)
-           (substatement-open . 0)
-           (substatement-label . 0)
-           (statement-cont . +)
-           (case-label . 0)
-           ;; align args with open brace OR don't indent at all (if open
-           ;; brace is at eolp and close brace is after arg with no trailing
-           ;; comma)
-           (brace-list-intro . 0)
-           (brace-list-close . -)
-           (arglist-intro . +)
-           (arglist-close +cc-lineup-arglist-close 0)
-           ;; don't over-indent lambda blocks
-           (inline-open . 0)
-           (inlambda . 0)
-           (innamespace . [0])
-           ;; indent access keywords +1 level, and properties beneath them
-           ;; another level
-           (access-label . [0])
-           ;; (inclass +cc-c++-lineup-inclass +)
-           (inclass +)
-           (label . 0))))
-  (when (listp c-default-style)
-    (setf (alist-get 'c-mode c-default-style) "cc")
-    (setf (alist-get 'c++-mode c-default-style) "cc")))
+  (after! cc-mode
+    (c-add-style
+     "cc" '((c-comment-only-line-offset . 0)
+            (c-hanging-braces-alist (brace-list-open)
+                                    (brace-entry-open)
+                                    (substatement-open after)
+                                    (block-close . c-snug-do-while)
+                                    (arglist-cont-nonempty))
+            (c-cleanup-list brace-else-brace)
+            (c-offsets-alist
+             (knr-argdecl-intro . 0)
+             (substatement-open . 0)
+             (substatement-label . 0)
+             (statement-cont . +)
+             (case-label . 0)
+             ;; align args with open brace OR don't indent at all (if open
+             ;; brace is at eolp and close brace is after arg with no trailing
+             ;; comma)
+             (brace-list-intro . 0)
+             (brace-list-close . -)
+             (arglist-intro . +)
+             (arglist-close +cc-lineup-arglist-close 0)
+             ;; don't over-indent lambda blocks
+             (inline-open . 0)
+             (inlambda . 0)
+             (innamespace . [0])
+             ;; indent access keywords +1 level, and properties beneath them
+             ;; another level
+             (access-label . [0])
+             ;; (inclass +cc-c++-lineup-inclass +)
+             (inclass +)
+             (label . 0))))
+    (when (listp c-default-style)
+      (setf (alist-get 'c-mode c-default-style) "cc")
+      (setf (alist-get 'c++-mode c-default-style) "cc"))))
 
 ;; Tramp
 (after! tramp
@@ -250,237 +262,43 @@
 
 ;; UI
 (setq evil-insert-state-cursor 'bar)
-(after! lsp-mode
-  (setq +format-with-lsp nil)
+(if (modulep! :tools lsp +eglot)
+    ;; eglot was enable
+    (after! eglot
+      (add-to-list 'eglot-server-programs
+                   '((c-mode c++-mode)
+                     . ("clangd"
+                        "-j=8"
+                        "--log=error"
+                        "--malloc-trim"
+                        "--background-index"
+                        "--clang-tidy"
+                        "--cross-file-rename"
+                        "--completion-style=detailed"
+                        "--pch-storage=memory"
+                        ;; "--header-insertion=never"
+                        "--header-insertion-decorators=0")))
+      (use-package! breadcrumb
+        :config
+        (breadcrumb-mode)))
+  ;; lsp-mode was enable
+  (after! lsp-mode
+    (setq +format-with-lsp nil)
 
-  (with-eval-after-load 'lsp-clangd
-    (add-to-list 'lsp-clients-clangd-args "--header-insertion=never"))
+    (with-eval-after-load 'lsp-clangd
+      (add-to-list 'lsp-clients-clangd-args "--header-insertion=never"))
 
-  (add-hook 'lsp-mode-hook #'lsp-headerline-breadcrumb-mode)
+    (add-hook 'lsp-mode-hook #'lsp-headerline-breadcrumb-mode)
 
-  (setq lsp-inlay-hint-enable t)
-  (dolist (hook '(c++-mode-hook c-mode-hook python-mode-hook rustic-mode-hook))
-    (add-hook hook #'lsp-inlay-hints-mode)))
-
+    (setq lsp-inlay-hint-enable t)
+    (dolist (hook '(c++-mode-hook c-mode-hook python-mode-hook rustic-mode-hook))
+      (add-hook hook #'lsp-inlay-hints-mode))))
 (use-package! treemacs
+  :commands 'treemacs
   :init
   (setq +treemacs-git-mode 'extended)
   :config
   (treemacs-project-follow-mode))
-
-(after! eglot
-  (add-to-list 'eglot-server-programs
-               '((c-mode c++-mode)
-                 . ("clangd"
-                    "-j=8"
-                    "--log=error"
-                    "--malloc-trim"
-                    "--background-index"
-                    "--clang-tidy"
-                    "--cross-file-rename"
-                    "--completion-style=detailed"
-                    "--pch-storage=memory"
-                    ;; "--header-insertion=never"
-                    "--header-insertion-decorators=0")))
-  (use-package! breadcrumb
-    :config
-    (breadcrumb-mode)))
-
-;; ;; Tabnine
-;; (use-package! company-tabnine
-;;   :after company
-;;   :config
-;;   (after! company
-;;     (setq +lsp-company-backends '(company-tabnine :separate company-capf company-yasnippet))
-;;     (setq company-show-numbers t)
-;;     (setq company-idle-delay 0)))
-
-(after! company
-  (setq company-tooltip-minimum-width 100)
-  (setq company-tooltip-maximum-width 100)
-  (setq +lsp-company-backends '(company-capf :separate company-yasnippet))
-  (add-to-list 'company-global-modes 'org-mode t))
-
-(unless (modulep! :editor evil)
-  (setq-default doom-leader-alt-key "M-SPC")
-  (setq-default doom-localleader-alt-key "M-SPC m"))
-
-;; FIXME: lsp-bridge optional
-(unless (or (modulep! :tools lsp)
-            (modulep! :complete company))
-  (use-package! lsp-bridge
-    :hook
-    (python-base-mode . lsp-bridge-mode)
-    (c++-mode . lsp-bridge-mode)
-    (c++-ts-mode . lsp-bridge-mode)
-    (rustic-mode . lsp-bridge-mode)
-
-    :init
-    (require 'yasnippet)
-    (yas-global-mode 1)
-
-    (require 'lsp-bridge)
-    (global-lsp-bridge-mode)
-    (setq lsp-bridge-c-lsp-server "clangd")
-    (setq acm-enable-yas nil)
-    (setq acm-enable-tabnine nil)
-    (setq acm-enable-codeium nil)
-    ;; (setq lsp-bridge-signature-show-function 'lsp-bridge-signature-posframe)
-    (setq lsp-bridge-enable-hover-diagnostic t)
-
-    :config
-    (map!
-     :mode prog-mode
-     (:leader
-      :desc "Rename symbol" "cr" #'lsp-bridge-rename
-      :desc "Diagnostics list" "cx" #'lsp-bridge-diagnostic-list
-      :desc "Code actions" "ca" #'lsp-bridge-code-action
-      :desc "Format document" "cf" #'lsp-bridge-code-format))
-
-    (add-to-list '+lookup-definition-functions #'lsp-bridge-find-def)
-    (add-to-list '+lookup-implementations-functions #'lsp-bridge-find-impl)
-    (add-to-list '+lookup-references-functions #'lsp-bridge-find-references)
-    (add-to-list '+lookup-type-definition-functions #'lsp-bridge-find-type-def)
-    (add-to-list '+lookup-documentation-functions #'lsp-bridge-popup-documentation)
-
-    (unless (display-graphic-p)
-      (with-eval-after-load 'acm
-        (require 'acm-terminal)))))
-
-(defun +display-vga-p ()
-  (not (char-displayable-p ?里)))
-
-(when (modulep! :ui modeline +light)
-  (general-after-init
-    (when (modulep! :tools lsp +eglot)   ; Only needs this for eglot
-      (add-to-list 'mode-line-misc-info
-                   '(flymake-mode
-                     (" ["
-                      flymake-mode-line-error-counter
-                      flymake-mode-line-warning-counter
-                      flymake-mode-line-note-counter
-                      "] "))
-                   nil)
-      (setq eglot--mode-line-format '("Eglot")))
-    (setq-default +modeline-format-left
-                  (remove '+modeline-position +modeline-format-left))
-    (setq-default +modeline-format-right
-                  '(""  +modeline-modes
-                    (vc-mode
-                     ("  " "" vc-mode " "))
-                    mode-line-misc-info
-                    +modeline-position
-                    "  " +modeline-encoding
-                    (+modeline-checker
-                     ("" +modeline-checker "   "))))
-    (setq +modeline-position '("  %l:%C  "))
-    (display-battery-mode)))
-
-(c-set-offset 'innamespace 0)
-
-(defun my-before-switch-term (&rest r)
-  (when (doom-project-root)
-    (cd (doom-project-root))))
-(advice-add '+term/toggle :before #'my-before-switch-term)
-(advice-add '+term/here :before #'my-before-switch-term)
-
-(with-eval-after-load 'org
-  (add-hook! org-mode (setq-local word-wrap-by-category t))
-  (setq org-tags-column 0)
-  (setq org-startup-folded 'show2levels)
-
-  (setq org-beamer-frame-default-options "")
-
-  ;; (global-org-modern-mode)
-
-  (map! :map org-mode-map
-        :localleader :desc "Remove org-babel result" :n "k" #'org-babel-remove-result-one-or-many)
-  (setf (plist-get org-format-latex-options :scale) 1.3))
-
-(unless (display-graphic-p)
-  (defun my/replace-tab ()
-    (interactive)
-    (if (region-active-p)
-        (indent-for-tab-command)
-      (better-jumper-jump-forward)))
-  (map! :n "TAB" #'my/replace-tab))
-
-;; Chinese support
-(use-package! rime
-  :commands 'toggle-input-method
-  :custom
-  (default-input-method "rime")
-  (rime-disable-predicates
-   '(rime-predicate-evil-mode-p
-     rime-predicate-prog-in-code-p
-     rime-predicate-after-ascii-char-p
-     rime-predicate-space-after-cc-p)))
-(use-package! rime-regexp
-  :after rime
-  :config
-  (rime-regexp-mode))
-
-;; VGA support
-(general-after-init
-  (when (+display-vga-p)
-    (set-face-foreground 'glyphless-char
-                         (face-attribute 'default :background))
-    (set-face-background 'glyphless-char
-                         (face-attribute 'default :foreground))
-    (after! company
-      (set-face-foreground 'company-tooltip-selection
-                           (face-attribute 'tooltip :background))
-      (set-face-background 'company-tooltip-selection
-                           (face-attribute 'tooltip :foreground)))
-    (after! vertico
-      (set-face-foreground 'vertico-current
-                           (face-attribute 'default :background))
-      (set-face-background 'vertico-current
-                           (face-attribute 'default :foreground)))))
-
-(use-package! leetcode
-  :commands 'leetcode
-  :config
-  (setq leetcode-prefer-language "cpp")
-  (setq leetcode-save-solutions t)
-  (setq leetcode-directory "~/Projects/Leetcode"))
-
-(use-package! consult-todo
-  :commands 'consult-todo
-  :config
-  (map! :leader :desc "Query todos" :nie"s q" #'consult-todo))
-
-(use-package! fanyi
-  :commands (fanyi-dwim2 fanyi-dwim)
-  :config
-  (map! :leader :desc "Fanyi words" :nie "s y" #'fanyi-dwim2))
-
-;; Pixel scrolling
-(pixel-scroll-precision-mode 1)
-(setq pixel-scroll-precision-interpolate-page t)
-;; (defun +pixel-scroll-interpolate-down (&optional lines)
-;;   (interactive)
-;;   (if lines
-;;       (pixel-scroll-precision-interpolate (* -1 lines (pixel-line-height)))
-;;     (pixel-scroll-interpolate-down)))
-
-;; (defun +pixel-scroll-interpolate-up (&optional lines)
-;;   (interactive)
-;;   (if lines
-;;       (pixel-scroll-precision-interpolate (* lines (pixel-line-height))))
-;;   (pixel-scroll-interpolate-up))
-
-;; (defalias 'scroll-up-command '+pixel-scroll-interpolate-down)
-;; (defalias 'scroll-down-command '+pixel-scroll-interpolate-up)
-
-(use-package! disable-mouse
-  :config
-  (global-disable-mouse-mode)
-  (mapc #'disable-mouse-in-keymap
-        (list evil-motion-state-map
-              evil-normal-state-map
-              evil-visual-state-map
-              evil-insert-state-map)))
 (when (modulep! :tools lsp)
   (use-package! citre
     :commands (xref-find-def
@@ -540,35 +358,161 @@ used in `company-backends'."
                               :with company-yasnippet
                               :separate)))))
 
-;; From https://unix.stackexchange.com/a/681480 to specify if on wayland or on xorg
-(when (null (getenv "DISPLAY"))     ; on Wayland
-  (use-package xclip
-    :defer t
-    :config
-    (xclip-mode -1))
+;; Tabnine
+;; (use-package! company-tabnine
+;;   :after company
+;;   :config
+;;   (after! company
+;;     (setq +lsp-company-backends '(company-tabnine :separate company-capf company-yasnippet))
+;;     (setq company-show-numbers t)
+;;     (setq company-idle-delay 0)))
 
-  ;; https://github.com/Crandel/home/blob/master/.config/emacs/recipes/base-rcp.el#L351)
-  (use-package select
-    :custom
-    (save-interprogram-paste-before-kill t)
-    (select-enable-clipboard             t)
-    (selection-coding-system             'utf-8)
-    :init
-    (setq-default wl-copy-process nil)
-    (when (string-prefix-p "wayland" (getenv "WAYLAND_DISPLAY"))
-      (defun wl-copy-handler (text)
-        (setq wl-copy-process (make-process :name "wl-copy"
-                                            :buffer nil
-                                            :command '("wl-copy" "-f" "-n")
-                                            :connection-type 'pipe))
-        (process-send-string wl-copy-process text)
-        (process-send-eof wl-copy-process))
-      (defun wl-paste-handler ()
-        (if (and wl-copy-process (process-live-p wl-copy-process))
-            nil ; should return nil if we're the current paste owner
-          (shell-command-to-string "wl-paste -n | tr -d \r")))
-      (setq interprogram-cut-function 'wl-copy-handler
-            interprogram-paste-function 'wl-paste-handler))))
+(after! company
+  (setq company-tooltip-minimum-width 100)
+  (setq company-tooltip-maximum-width 100)
+  (setq +lsp-company-backends '(company-capf :separate company-yasnippet))
+  (add-to-list 'company-global-modes 'org-mode t))
+
+(unless (modulep! :editor evil)
+  (setq-default doom-leader-alt-key "M-SPC")
+  (setq-default doom-localleader-alt-key "M-SPC m"))
+
+;; FIXME: lsp-bridge optional
+;; (unless (or (modulep! :tools lsp)
+;;             (modulep! :complete company))
+;;   (use-package! lsp-bridge
+;;     :hook
+;;     (python-base-mode . lsp-bridge-mode)
+;;     (c++-mode . lsp-bridge-mode)
+;;     (c++-ts-mode . lsp-bridge-mode)
+;;     (rustic-mode . lsp-bridge-mode)
+
+;;     :init
+;;     (require 'yasnippet)
+;;     (yas-global-mode 1)
+
+;;     (require 'lsp-bridge)
+;;     (global-lsp-bridge-mode)
+;;     (setq lsp-bridge-c-lsp-server "clangd")
+;;     (setq acm-enable-yas nil)
+;;     (setq acm-enable-tabnine nil)
+;;     (setq acm-enable-codeium nil)
+;;     ;; (setq lsp-bridge-signature-show-function 'lsp-bridge-signature-posframe)
+;;     (setq lsp-bridge-enable-hover-diagnostic t)
+
+;;     :config
+;;     (map!
+;;      :mode prog-mode
+;;      (:leader
+;;       :desc "Rename symbol" "cr" #'lsp-bridge-rename
+;;       :desc "Diagnostics list" "cx" #'lsp-bridge-diagnostic-list
+;;       :desc "Code actions" "ca" #'lsp-bridge-code-action
+;;       :desc "Format document" "cf" #'lsp-bridge-code-format))
+
+;;     (add-to-list '+lookup-definition-functions #'lsp-bridge-find-def)
+;;     (add-to-list '+lookup-implementations-functions #'lsp-bridge-find-impl)
+;;     (add-to-list '+lookup-references-functions #'lsp-bridge-find-references)
+;;     (add-to-list '+lookup-type-definition-functions #'lsp-bridge-find-type-def)
+;;     (add-to-list '+lookup-documentation-functions #'lsp-bridge-popup-documentation)
+
+;;     (unless (display-graphic-p)
+;;       (with-eval-after-load 'acm
+;;         (require 'acm-terminal)))))
+
+(defun +display-vga-p ()
+  (not (char-displayable-p ?里)))
+
+(when (modulep! :ui modeline +light)
+  (general-after-init
+    (when (modulep! :tools lsp +eglot)   ; Only needs this for eglot
+      (add-to-list 'mode-line-misc-info
+                   '(flymake-mode
+                     (" ["
+                      flymake-mode-line-error-counter
+                      flymake-mode-line-warning-counter
+                      flymake-mode-line-note-counter
+                      "] "))
+                   nil)
+      (setq eglot--mode-line-format '("Eglot")))
+    (setq-default +modeline-format-left
+                  (remove '+modeline-position +modeline-format-left))
+    (setq-default +modeline-format-right
+                  '(""  +modeline-modes
+                    (vc-mode
+                     ("  " "" vc-mode " "))
+                    mode-line-misc-info
+                    +modeline-position
+                    "  " +modeline-encoding
+                    (+modeline-checker
+                     ("" +modeline-checker "   "))))
+    (setq +modeline-position '("  %l:%C  "))
+    (display-battery-mode)))
+
+(c-set-offset 'innamespace 0)
+
+(defun my-before-switch-term (&rest r)
+  (when (doom-project-root)
+    (cd (doom-project-root))))
+(advice-add '+term/toggle :before #'my-before-switch-term)
+(advice-add '+term/here :before #'my-before-switch-term)
+
+(unless (display-graphic-p)
+  (defun my/replace-tab ()
+    (interactive)
+    (if (region-active-p)
+        (indent-for-tab-command)
+      (better-jumper-jump-forward)))
+  (map! :n "TAB" #'my/replace-tab))
+
+;; Chinese support
+(use-package! rime
+  :commands 'toggle-input-method
+  :custom
+  (default-input-method "rime")
+  (rime-disable-predicates
+   '(rime-predicate-evil-mode-p
+     rime-predicate-prog-in-code-p
+     rime-predicate-after-ascii-char-p
+     rime-predicate-space-after-cc-p)))
+(use-package! rime-regexp
+  :after rime
+  :config
+  (rime-regexp-mode))
+
+;; VGA support
+(general-after-init
+  (when (+display-vga-p)
+    (set-face-foreground 'glyphless-char
+                         (face-attribute 'default :background))
+    (set-face-background 'glyphless-char
+                         (face-attribute 'default :foreground))
+    (after! company
+      (set-face-foreground 'company-tooltip-selection
+                           (face-attribute 'tooltip :background))
+      (set-face-background 'company-tooltip-selection
+                           (face-attribute 'tooltip :foreground)))
+    (after! vertico
+      (set-face-foreground 'vertico-current
+                           (face-attribute 'default :background))
+      (set-face-background 'vertico-current
+                           (face-attribute 'default :foreground)))))
+
+(use-package! leetcode
+  :commands 'leetcode
+  :config
+  (setq leetcode-prefer-language "cpp")
+  (setq leetcode-save-solutions t)
+  (setq leetcode-directory "~/Projects/Leetcode"))
+
+(use-package! consult-todo
+  :commands 'consult-todo
+  :config
+  (map! :leader :desc "Query todos" :nie"s q" #'consult-todo))
+
+(use-package! fanyi
+  :commands (fanyi-dwim2 fanyi-dwim)
+  :config
+  (map! :leader :desc "Fanyi words" :nie "s y" #'fanyi-dwim2))
 
 (use-package! telega
   :commands 'telega
@@ -599,6 +543,64 @@ used in `company-backends'."
         telega-symbol-forward (nerd-icons-mdicon "nf-md-comment_arrow_right_outline")
         telega-symbol-checkmark (nerd-icons-codicon "nf-cod-check")
         telega-symbol-heavy-checkmark (nerd-icons-codicon "nf-cod-check_all")))
+
+;; Pixel scrolling
+(pixel-scroll-precision-mode 1)
+(setq pixel-scroll-precision-interpolate-page t)
+;; (defun +pixel-scroll-interpolate-down (&optional lines)
+;;   (interactive)
+;;   (if lines
+;;       (pixel-scroll-precision-interpolate (* -1 lines (pixel-line-height)))
+;;     (pixel-scroll-interpolate-down)))
+
+;; (defun +pixel-scroll-interpolate-up (&optional lines)
+;;   (interactive)
+;;   (if lines
+;;       (pixel-scroll-precision-interpolate (* lines (pixel-line-height))))
+;;   (pixel-scroll-interpolate-up))
+
+;; (defalias 'scroll-up-command '+pixel-scroll-interpolate-down)
+;; (defalias 'scroll-down-command '+pixel-scroll-interpolate-up)
+
+;; Disable mouse
+(use-package! disable-mouse
+  :config
+  (global-disable-mouse-mode)
+  (mapc #'disable-mouse-in-keymap
+        (list evil-motion-state-map
+              evil-normal-state-map
+              evil-visual-state-map
+              evil-insert-state-map)))
+
+;; From https://unix.stackexchange.com/a/681480 to specify if on wayland or on xorg
+(when (null (getenv "DISPLAY"))     ; on Wayland
+  (use-package xclip
+    :defer t
+    :config
+    (xclip-mode -1))
+
+  ;; https://github.com/Crandel/home/blob/master/.config/emacs/recipes/base-rcp.el#L351)
+  (use-package select
+    :custom
+    (save-interprogram-paste-before-kill t)
+    (select-enable-clipboard             t)
+    (selection-coding-system             'utf-8)
+    :init
+    (setq-default wl-copy-process nil)
+    (when (string-prefix-p "wayland" (getenv "WAYLAND_DISPLAY"))
+      (defun wl-copy-handler (text)
+        (setq wl-copy-process (make-process :name "wl-copy"
+                                            :buffer nil
+                                            :command '("wl-copy" "-f" "-n")
+                                            :connection-type 'pipe))
+        (process-send-string wl-copy-process text)
+        (process-send-eof wl-copy-process))
+      (defun wl-paste-handler ()
+        (if (and wl-copy-process (process-live-p wl-copy-process))
+            nil ; should return nil if we're the current paste owner
+          (shell-command-to-string "wl-paste -n | tr -d \r")))
+      (setq interprogram-cut-function 'wl-copy-handler
+            interprogram-paste-function 'wl-paste-handler))))
 
 ;;; mail
 (setq smtpmail-smtp-server "smtp.qq.com" ;; <-- edit this !!!
