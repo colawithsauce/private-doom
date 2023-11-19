@@ -58,8 +58,8 @@
 (setq org-directory "~/Org/")
 
 
-(setq url-gateway-local-host-regexp
-      (concat "\\`" (regexp-opt '("localhost" "127.0.0.1")) "\\'"))
+;; (setq url-gateway-local-host-regexp
+;;       (concat "\\`" (regexp-opt '("localhost" "127.0.0.1")) "\\'"))
 ;; (setq url-proxy-services
 ;;       '(("no_proxy" . "^\\(localhost\\|10\\..*\\|192\\.168\\..*\\)")
 ;;         ("http" . "127.0.0.1:7890")
