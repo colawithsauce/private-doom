@@ -59,6 +59,8 @@
 (package! ccls
   :disable t)
 
+;; (package! xclip :disable t)
+
 ;; (package! nerd-icons-completion
 ;;   :recipe (:host github :repo "rainstormstudio/nerd-icons-completion"))
 ;; (package! nerd-icons)

@@ -1,0 +1,3 @@
+[submodule "private-lisp"]
+	path = private-lisp
+	url = ./private-lisp

@@ -22,18 +22,19 @@
 ;; accept. For example:
 ;;
 (setq
- my-font-size 32
+ my-font-size 26
  ;; doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
  ;; doom-font (font-spec :family "SFMono Nerd Font Mono" :size my-font-size :weight 'medium)
  ;; doom-font (font-spec :family "IBM Plex Mono" :size my-font-size :weight 'medium)
  doom-font (font-spec :family "Recursive Mono Casual Static" :size my-font-size)
  ;; doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
  doom-variable-pitch-font (font-spec :family "BlexMono Nerd Font" :size my-font-size)
- doom-unicode-font (font-spec :family  "Twitter Color Emoji" :size my-font-size))
+ doom-unicode-font (font-spec :family  "Joypixels" :size my-font-size))
 
 (defun my-cjk-font()
   (dolist (charset '(kana han cjk-misc symbol bopomofo))
-    (set-fontset-font t charset (font-spec :family "LXGW Neo XiHei Screen"))))
+    ;; (set-fontset-font t charset (font-spec :family "LXGW Neo XiHei Screen"))
+    (set-fontset-font t charset (font-spec :family "LXGW WenKai Mono"))))
 
 (add-hook! 'after-setting-font-hook #'my-cjk-font)
 ;;
@@ -109,28 +110,32 @@
 ;;         company-minimum-prefix-length 1
 ;;         company-show-quick-access t))
 
-(use-package org-protocol
-  :config
-  (add-to-list 'org-protocol-protocol-alist
-               '("org-find-file" :protocol "find-file" :function org-protocol-find-file :kill-client nil))
+;; Word wrap support!
+(setq word-wrap-by-category t)
 
-  (defun org-protocol-find-file-fix-wsl-path (path)
-    "If inside WSL, change Windows-style paths to WSL-style paths."
-    (if (not (string-match-p "-[Mm]icrosoft" operating-system-release))
-        path
-      (save-match-data
-        (if (/= 0 (string-match "^\\([a-zA-Z]\\):\\(/.*\\)" path))
-            path
-          (let ((volume (match-string-no-properties 1 path))
-                (abspath (match-string-no-properties 2 path)))
-            (format "/mnt/%s%s" (downcase volume) abspath))))))
+(after! org
+  (use-package org-protocol
+    :config
+    (add-to-list 'org-protocol-protocol-alist
+                 '("org-find-file" :protocol "find-file" :function org-protocol-find-file :kill-client nil))
 
-  (defun org-protocol-find-file (fname)
-    "Process org-protocol://find-file?path= style URL."
-    (let ((f (plist-get (org-protocol-parse-parameters fname nil '(:path)) :path)))
-      (find-file (org-protocol-find-file-fix-wsl-path f))
-      (raise-frame)
-      (select-frame-set-input-focus (selected-frame)))))
+    (defun org-protocol-find-file-fix-wsl-path (path)
+      "If inside WSL, change Windows-style paths to WSL-style paths."
+      (if (not (string-match-p "-[Mm]icrosoft" operating-system-release))
+          path
+        (save-match-data
+          (if (/= 0 (string-match "^\\([a-zA-Z]\\):\\(/.*\\)" path))
+              path
+            (let ((volume (match-string-no-properties 1 path))
+                  (abspath (match-string-no-properties 2 path)))
+              (format "/mnt/%s%s" (downcase volume) abspath))))))
+
+    (defun org-protocol-find-file (fname)
+      "Process org-protocol://find-file?path= style URL."
+      (let ((f (plist-get (org-protocol-parse-parameters fname nil '(:path)) :path)))
+        (find-file (org-protocol-find-file-fix-wsl-path f))
+        (raise-frame)
+        (select-frame-set-input-focus (selected-frame))))))
 
 ;; From https://github.com/hlissner/.doom.d
 (map! (:after evil-org
@@ -237,9 +242,11 @@
     (setf (alist-get 'c++-mode c-default-style) "cc")))
 
 ;; Tramp
-(use-package tramp-container)
-(add-to-list 'tramp-remote-path 'tramp-own-remote-path)
-(setq enable-remote-dir-locals t)
+(after! tramp
+  (use-package tramp-container
+    :commands (find-file))
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+  (setq enable-remote-dir-locals t))
 
 ;; UI
 (setq evil-insert-state-cursor 'bar)
@@ -259,8 +266,6 @@
   :init
   (setq +treemacs-git-mode 'extended)
   :config
-  ;; buggy
-  ;; (treemacs-tag-follow-mode)
   (treemacs-project-follow-mode))
 
 (after! eglot
@@ -293,13 +298,14 @@
 (after! company
   (setq company-tooltip-minimum-width 100)
   (setq company-tooltip-maximum-width 100)
-  (setq +lsp-company-backends '(company-capf :separate company-yasnippet)))
+  (setq +lsp-company-backends '(company-capf :separate company-yasnippet))
+  (add-to-list 'company-global-modes 'org-mode t))
 
 (unless (modulep! :editor evil)
   (setq-default doom-leader-alt-key "M-SPC")
   (setq-default doom-localleader-alt-key "M-SPC m"))
 
-;; lsp-bridge
+;; FIXME: lsp-bridge optional
 (unless (or (modulep! :tools lsp)
             (modulep! :complete company))
   (use-package! lsp-bridge
@@ -399,7 +405,9 @@
       (better-jumper-jump-forward)))
   (map! :n "TAB" #'my/replace-tab))
 
+;; Chinese support
 (use-package! rime
+  :commands 'toggle-input-method
   :custom
   (default-input-method "rime")
   (rime-disable-predicates
@@ -407,7 +415,6 @@
      rime-predicate-prog-in-code-p
      rime-predicate-after-ascii-char-p
      rime-predicate-space-after-cc-p)))
-
 (use-package! rime-regexp
   :after rime
   :config
@@ -432,16 +439,19 @@
                            (face-attribute 'default :foreground)))))
 
 (use-package! leetcode
+  :commands 'leetcode
   :config
   (setq leetcode-prefer-language "cpp")
   (setq leetcode-save-solutions t)
   (setq leetcode-directory "~/Projects/Leetcode"))
 
 (use-package! consult-todo
+  :commands 'consult-todo
   :config
   (map! :leader :desc "Query todos" :nie"s q" #'consult-todo))
 
 (use-package! fanyi
+  :commands (fanyi-dwim2 fanyi-dwim)
   :config
   (map! :leader :desc "Fanyi words" :nie "s y" #'fanyi-dwim2))
 
@@ -471,68 +481,124 @@
               evil-normal-state-map
               evil-visual-state-map
               evil-insert-state-map)))
+(when (modulep! :tools lsp)
+  (use-package! citre
+    :commands (xref-find-def
+               xref-find-definitions
+               citre-ace-peek
+               citre-update-this-tags-file)
+    :config
+    (require 'citre-config)
 
-(use-package! citre
-  :config
-  (require 'citre-config)
+    (map! :leader :desc "Citre peek" :n "c p" #'citre-ace-peek)
+    (map! :leader :desc "Citre update" :n "c u" #'citre-update-this-tags-file)
 
-  (map! :leader :desc "Citre peek" :n "c p" #'citre-ace-peek)
-  (map! :leader :desc "Citre update" :n "c u" #'citre-update-this-tags-file)
+    ;; Use Citre xref backend as a fallback
+    (define-advice xref--create-fetcher (:around (-fn &rest -args) fallback)
+      (let ((fetcher (apply -fn -args))
+            (citre-fetcher
+             (let ((xref-backend-functions '(citre-xref-backend t)))
+               (apply -fn -args))))
+        (lambda ()
+          (or (with-demoted-errors "%s, fallback to citre"
+                (funcall fetcher))
+              (funcall citre-fetcher)))))
 
-  ;; Use Citre xref backend as a fallback
-  (define-advice xref--create-fetcher (:around (-fn &rest -args) fallback)
-    (let ((fetcher (apply -fn -args))
-          (citre-fetcher
-           (let ((xref-backend-functions '(citre-xref-backend t)))
-             (apply -fn -args))))
-      (lambda ()
-        (or (with-demoted-errors "%s, fallback to citre"
-              (funcall fetcher))
-            (funcall citre-fetcher)))))
-
-  ;; Combine completions from Citre and lsp/eglot
-  (defmacro citre-backend-to-company-backend (backend)
-    "Create a company backend from Citre completion backend BACKEND.
+    ;; Combine completions from Citre and lsp/eglot
+    (defmacro citre-backend-to-company-backend (backend)
+      "Create a company backend from Citre completion backend BACKEND.
 The result is a company backend called
 `company-citre-<backend>' (like `company-citre-tags') and can be
 used in `company-backends'."
-    (let ((backend-name (intern (concat "company-citre-" (symbol-name backend))))
-          (docstring (concat "`company-mode' backend from the `"
-                             (symbol-name backend)
-                             "' Citre backend.\n"
-                             "`citre-mode' needs to be enabled to use this.")))
-      `(defun ,backend-name (command &optional arg &rest ignored)
-         ,docstring
-         (pcase command
-           ('interactive (company-begin-backend ',backend-name))
-           ('prefix (and (bound-and-true-p citre-mode)
-                         (citre-backend-usable-p ',backend)
-                         ;; We shouldn't use this as it's defined for getting
-                         ;; definitions/references.  But the Citre completion
-                         ;; backend design is not fully compliant with company's
-                         ;; design so there's no simple "right" solution, and this
-                         ;; works for tags/global backends.
-                         (or (citre-get-symbol-at-point-for-backend ',backend)
-                             'stop)))
-           ('meta (citre-get-property 'signature arg))
-           ('annotation (citre-get-property 'annotation arg))
-           ('candidates (let ((citre-completion-backends '(,backend)))
-                          (all-completions arg (nth 2 (citre-completion-at-point)))))))))
-  (citre-backend-to-company-backend tags)
-  (citre-backend-to-company-backend global)
-  (setq company-backends '((company-capf
-                            company-citre-tags
-                            company-citre-global
-                            :with company-yasnippet
-                            :separate))))
+      (let ((backend-name (intern (concat "company-citre-" (symbol-name backend))))
+            (docstring (concat "`company-mode' backend from the `"
+                               (symbol-name backend)
+                               "' Citre backend.\n"
+                               "`citre-mode' needs to be enabled to use this.")))
+        `(defun ,backend-name (command &optional arg &rest ignored)
+           ,docstring
+           (pcase command
+             ('interactive (company-begin-backend ',backend-name))
+             ('prefix (and (bound-and-true-p citre-mode)
+                           (citre-backend-usable-p ',backend)
+                           ;; We shouldn't use this as it's defined for getting
+                           ;; definitions/references.  But the Citre completion
+                           ;; backend design is not fully compliant with company's
+                           ;; design so there's no simple "right" solution, and this
+                           ;; works for tags/global backends.
+                           (or (citre-get-symbol-at-point-for-backend ',backend)
+                               'stop)))
+             ('meta (citre-get-property 'signature arg))
+             ('annotation (citre-get-property 'annotation arg))
+             ('candidates (let ((citre-completion-backends '(,backend)))
+                            (all-completions arg (nth 2 (citre-completion-at-point)))))))))
+    (citre-backend-to-company-backend tags)
+    (citre-backend-to-company-backend global)
+    (setq company-backends '((company-capf
+                              company-citre-tags
+                              company-citre-global
+                              :with company-yasnippet
+                              :separate)))))
+
+;; From https://unix.stackexchange.com/a/681480 to specify if on wayland or on xorg
+(when (null (getenv "DISPLAY"))     ; on Wayland
+  (use-package xclip
+    :defer t
+    :config
+    (xclip-mode -1))
+
+  ;; https://github.com/Crandel/home/blob/master/.config/emacs/recipes/base-rcp.el#L351)
+  (use-package select
+    :custom
+    (save-interprogram-paste-before-kill t)
+    (select-enable-clipboard             t)
+    (selection-coding-system             'utf-8)
+    :init
+    (setq-default wl-copy-process nil)
+    (when (string-prefix-p "wayland" (getenv "WAYLAND_DISPLAY"))
+      (defun wl-copy-handler (text)
+        (setq wl-copy-process (make-process :name "wl-copy"
+                                            :buffer nil
+                                            :command '("wl-copy" "-f" "-n")
+                                            :connection-type 'pipe))
+        (process-send-string wl-copy-process text)
+        (process-send-eof wl-copy-process))
+      (defun wl-paste-handler ()
+        (if (and wl-copy-process (process-live-p wl-copy-process))
+            nil ; should return nil if we're the current paste owner
+          (shell-command-to-string "wl-paste -n | tr -d \r")))
+      (setq interprogram-cut-function 'wl-copy-handler
+            interprogram-paste-function 'wl-paste-handler))))
 
 (use-package! telega
+  :commands 'telega
   :custom
   (telega-completing-read-function completing-read-function)
+  (telega-use-images t)
 
   ;; (telega-proxies '((:server "localhost" :port 7890 :enable t :type (:@type "proxyTypeSocks5"))))
   :config
-  (add-hook 'telega-chat-mode-hook (lambda () (electric-pair-local-mode -1))))
+  ;; Load my private configs
+  (when (file-exists-p (file-name-concat doom-user-dir "private-lisp/init-telega.el"))
+    (load (file-name-concat doom-user-dir "private-lisp/init-telega.el")))
+
+  ;; 解决头像裂开的问题
+  ;; (setq telega-avatar-workaround-gaps-for '(return t))
+
+  (add-hook 'telega-chat-mode-hook (lambda () (electric-pair-local-mode -1)))
+
+  (map! :map telega-chat-mode-map
+        :desc "Input Emoji" :i "C-c C-e" #'emoji-search)
+
+  ;; Disable user status image.
+  (advice-add 'telega-ins--user-emoji-status :around #'ignore)
+
+  ;; Nerd icons
+  (setq telega-symbol-reply (nerd-icons-faicon "nf-fa-reply")
+        telega-symbol-reply-quote (nerd-icons-faicon "nf-fa-reply_all")
+        telega-symbol-forward (nerd-icons-mdicon "nf-md-comment_arrow_right_outline")
+        telega-symbol-checkmark (nerd-icons-codicon "nf-cod-check")
+        telega-symbol-heavy-checkmark (nerd-icons-codicon "nf-cod-check_all")))
 
 ;;; mail
 (setq smtpmail-smtp-server "smtp.qq.com" ;; <-- edit this !!!
@@ -543,19 +609,19 @@ used in `company-backends'."
       ;;    smtpmail-debug-verb t
       message-send-mail-function 'message-smtpmail-send-it)
 
-;; This is an Emacs package that creates graphviz directed graphs from
-;; the headings of an org file
-(use-package org-mind-map
-  :init
-  (require 'ox-org)
-  ;; Uncomment the below if 'ensure-system-packages` is installed
-  :ensure-system-package (gvgen . graphviz)
-  :config
-  (setq org-mind-map-engine "dot")       ; Default. Directed Graph
-  ;; (setq org-mind-map-engine "neato")  ; Undirected Spring Graph
-  ;; (setq org-mind-map-engine "twopi")  ; Radial Layout
-  ;; (setq org-mind-map-engine "fdp")    ; Undirected Spring Force-Directed
-  ;; (setq org-mind-map-engine "sfdp")   ; Multiscale version of fdp for the layout of large graphs
-  ;; (setq org-mind-map-engine "twopi")  ; Radial layouts
-  ;; (setq org-mind-map-engine "circo")  ; Circular Layout
-  )
+;; ;; This is an Emacs package that creates graphviz directed graphs from
+;; ;; the headings of an org file
+;; (use-package org-mind-map
+;;   :init
+;;   (require 'ox-org)
+;;   ;; Uncomment the below if 'ensure-system-packages` is installed
+;;   :ensure-system-package (gvgen . graphviz)
+;;   :config
+;;   (setq org-mind-map-engine "dot")       ; Default. Directed Graph
+;;   ;; (setq org-mind-map-engine "neato")  ; Undirected Spring Graph
+;;   ;; (setq org-mind-map-engine "twopi")  ; Radial Layout
+;;   ;; (setq org-mind-map-engine "fdp")    ; Undirected Spring Force-Directed
+;;   ;; (setq org-mind-map-engine "sfdp")   ; Multiscale version of fdp for the layout of large graphs
+;;   ;; (setq org-mind-map-engine "twopi")  ; Radial layouts
+;;   ;; (setq org-mind-map-engine "circo")  ; Circular Layout
+;;   )

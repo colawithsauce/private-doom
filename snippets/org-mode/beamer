@@ -6,7 +6,7 @@
 #+startup: beamer
 #+LaTeX_CLASS: beamer
 #+LaTeX_CLASS_OPTIONS: [bigger]
-#+AUTHOR: ${1:xxx}
+#+AUTHOR: ${1:colawithsauce}
 #+BEAMER_HEADER: \institute{${2:xxx}}
 #+OPTIONS: H:2 toc:nil num:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
 #+BEAMER_THEME: CambridgeUS
