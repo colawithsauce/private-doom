@@ -514,36 +514,6 @@ used in `company-backends'."
   :config
   (map! :leader :desc "Fanyi words" :nie "s y" #'fanyi-dwim2))
 
-(use-package! telega
-  :commands 'telega
-  :custom
-  (telega-completing-read-function completing-read-function)
-  (telega-use-images t)
-
-  ;; (telega-proxies '((:server "localhost" :port 7890 :enable t :type (:@type "proxyTypeSocks5"))))
-  :config
-  ;; Load my private configs
-  (when (file-exists-p (file-name-concat doom-user-dir "private-lisp/init-telega.el"))
-    (load (file-name-concat doom-user-dir "private-lisp/init-telega.el")))
-
-  ;; 解决头像裂开的问题
-  ;; (setq telega-avatar-workaround-gaps-for '(return t))
-
-  (add-hook 'telega-chat-mode-hook (lambda () (electric-pair-local-mode -1)))
-
-  (map! :map telega-chat-mode-map
-        :desc "Input Emoji" :i "C-c C-e" #'emoji-search)
-
-  ;; Disable user status image.
-  (advice-add 'telega-ins--user-emoji-status :around #'ignore)
-
-  ;; Nerd icons
-  (setq telega-symbol-reply (nerd-icons-faicon "nf-fa-reply")
-        telega-symbol-reply-quote (nerd-icons-faicon "nf-fa-reply_all")
-        telega-symbol-forward (nerd-icons-mdicon "nf-md-comment_arrow_right_outline")
-        telega-symbol-checkmark (nerd-icons-codicon "nf-cod-check")
-        telega-symbol-heavy-checkmark (nerd-icons-codicon "nf-cod-check_all")))
-
 ;; Pixel scrolling
 (pixel-scroll-precision-mode 1)
 (setq pixel-scroll-precision-interpolate-page t)
@@ -610,6 +580,12 @@ used in `company-backends'."
       ;;    smtpmail-debug-info t
       ;;    smtpmail-debug-verb t
       message-send-mail-function 'message-smtpmail-send-it)
+
+;; load all my private configurations
+(add-hook! 'doom-first-input-hook
+  (when-let ((private-lisp-directory (file-exists-p! (file-name-concat doom-user-dir "private-lisp"))))
+    (dolist (file (directory-files private-lisp-directory 'full (rx ".el" eos)))
+      (load file))))
 
 ;; ;; This is an Emacs package that creates graphviz directed graphs from
 ;; ;; the headings of an org file
