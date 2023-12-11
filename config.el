@@ -22,7 +22,7 @@
 ;; accept. For example:
 ;;
 (setq
- my-font-size 26
+ my-font-size 22
  ;; doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
  ;; doom-font (font-spec :family "SFMono Nerd Font Mono" :size my-font-size :weight 'medium)
  ;; doom-font (font-spec :family "IBM Plex Mono" :size my-font-size :weight 'medium)
@@ -32,6 +32,7 @@
  doom-unicode-font (font-spec :family  "Joypixels" :size my-font-size))
 
 (defun my-cjk-font()
+  (add-to-list 'face-font-rescale-alist '("Sarasa*" . 0.9))
   (dolist (charset '(kana han cjk-misc symbol bopomofo))
     ;; (set-fontset-font t charset (font-spec :family "LXGW Neo XiHei Screen"))
     (set-fontset-font t charset (font-spec :family "LXGW WenKai Mono"))))
@@ -46,12 +47,14 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-dark+)
+;; (setq doom-dark+-blue-modeline t)
+;; (setq doom-theme 'doom-dark+)
+(setq doom-theme 'modus-vivendi-tritanopia)
 ;; (add-to-list 'default-frame-alist '(alpha-background . 90))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type 'relative)
+(setq display-line-numbers-type t)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -141,12 +144,20 @@
   (setq org-startup-folded 'show2levels)
 
   (setq org-beamer-frame-default-options "")
+  (setq org-export-with-sub-superscripts nil)
+  (add-to-list 'org-babel-default-header-args '(:eval . "never-export"))
 
   ;; (global-org-modern-mode)
 
   (map! :map org-mode-map
         :localleader :desc "Remove org-babel result" :n "k" #'org-babel-remove-result-one-or-many)
   (setf (plist-get org-format-latex-options :scale) 1.3)
+
+  ;; new embrace
+  (add-hook! 'org-mode-hook
+             t
+             (lambda ()
+               (embrace-add-pair ?8 "​*" "*​")))
 
 
   ;; From https://github.com/hlissner/.doom.d
@@ -171,6 +182,9 @@
 
 (map! :leader
       :desc "Slurp sexp" :n ">" #'sp-slurp-hybrid-sexp)
+(use-package vterm
+  :commands #'vterm
+  :custom (vterm-shell "/usr/bin/fish"))
 
 (after! org-roam
   ;; Setting default filename of new roam node.
@@ -280,10 +294,10 @@
                         "--header-insertion-decorators=0")))
       (use-package! breadcrumb
         :config
-        (breadcrumb-mode)))
+        (add-hook! 'eglot-managed-mode-hook #'breadcrumb-local-mode)))
   ;; lsp-mode was enable
   (after! lsp-mode
-    (setq +format-with-lsp nil)
+    (setq +format-with-lsp t)
 
     (with-eval-after-load 'lsp-clangd
       (add-to-list 'lsp-clients-clangd-args "--header-insertion=never"))
@@ -301,15 +315,19 @@
   (treemacs-project-follow-mode))
 (when (modulep! :tools lsp)
   (use-package! citre
+    :init
+    (map! :leader :desc "Citre jump" :n "c ." #'citre-jump)
+    (map! :leader :desc "Citre peek" :n "c /" #'citre-peek)
+    (map! :leader :desc "Citre update" :n "c u" #'citre-update-this-tags-file)
+
     :commands (xref-find-def
                xref-find-definitions
+               citre-jump
+               citre-peek
                citre-ace-peek
                citre-update-this-tags-file)
     :config
     (require 'citre-config)
-
-    (map! :leader :desc "Citre peek" :n "c p" #'citre-ace-peek)
-    (map! :leader :desc "Citre update" :n "c u" #'citre-update-this-tags-file)
 
     ;; Use Citre xref backend as a fallback
     (define-advice xref--create-fetcher (:around (-fn &rest -args) fallback)
@@ -472,8 +490,7 @@ used in `company-backends'."
   (rime-disable-predicates
    '(rime-predicate-evil-mode-p
      rime-predicate-prog-in-code-p
-     rime-predicate-after-ascii-char-p
-     rime-predicate-space-after-cc-p)))
+     rime-predicate-org-latex-mode-p)))
 (use-package! rime-regexp
   :after rime
   :config
@@ -543,9 +560,9 @@ used in `company-backends'."
               evil-insert-state-map)))
 
 ;; From https://unix.stackexchange.com/a/681480 to specify if on wayland or on xorg
-(when (null (getenv "DISPLAY"))     ; on Wayland
+(when (string-prefix-p "wayland" (getenv "WAYLAND_DISPLAY"))     ; on Wayland
   (use-package xclip
-    :defer t
+    :disabled t
     :config
     (xclip-mode -1))
 
@@ -580,6 +597,29 @@ used in `company-backends'."
       ;;    smtpmail-debug-info t
       ;;    smtpmail-debug-verb t
       message-send-mail-function 'message-smtpmail-send-it)
+
+(use-package! anki-helper
+  :after org
+  :custom
+  (anki-helper-default-note-type "Basic")
+  (anki-helper-default-deck "All::Default")
+  (anki-helper-default-match "+card")
+  :config
+  (defun anki-helper-fields-get-default ()
+    "Default function for get filed info of the current entry."
+    (let* ((elt (org-element-at-point))
+           (front (org-element-property-2 elt :title))
+           (contents-begin (org-element-property-2 elt :contents-begin))
+           (robust-begin (or (org-element-property-2 elt :robust-begin)
+                             contents-begin))
+           (beg (if (or (= contents-begin robust-begin)
+                        (= (+ 2 contents-begin) robust-begin))
+                    contents-begin
+                  (1+ robust-begin)))
+           (contents-end (org-element-property-2 elt :contents-end))
+           (back (buffer-substring-no-properties
+                  beg (1- contents-end))))
+      (list front back))))
 
 ;; load all my private configurations
 (add-hook! 'doom-first-input-hook

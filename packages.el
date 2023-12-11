@@ -78,7 +78,7 @@
 ;; (package! company-tabnine)
 (package! cuda-mode :disable t)
 (package! rime)
-(package! telega)
+(package! telega :disable t)
 (package! breadcrumb
   :recipe (:host github
            :repo "joaotavora/breadcrumb"))
@@ -102,6 +102,15 @@
 (package! fanyi
   :recipe (:host github
            :repo "condy0919/fanyi.el"))
+
+(package! anki-helper
+  :recipe (:host github
+           :repo "Elilif/emacs-anki-helper"))
+
+(package! ox-pandoc)
+
+(when (modulep! :tools lsp +eglot)
+  (unpin! eglot))
 
 ;; BUG: https://github.com/doomemacs/doomemacs/issues/7334
 ;; (package! org

@@ -2,6 +2,6 @@
 # name: imgwid
 # key: imgwid
 # --
-
+#+ATTR_HTML: :width 1500
 #+ATTR_LATEX: :width .${1:6}\textwidth
 $0
