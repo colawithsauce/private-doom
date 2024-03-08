@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: pipe_all
+# key: <p
+# --
+pipe_barrier(PIPE_ALL);

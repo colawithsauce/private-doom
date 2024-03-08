@@ -26,9 +26,11 @@
  ;; doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
  ;; doom-font (font-spec :family "SFMono Nerd Font Mono" :size my-font-size :weight 'medium)
  ;; doom-font (font-spec :family "IBM Plex Mono" :size my-font-size :weight 'medium)
- doom-font (font-spec :family "Recursive Mono Casual Static" :size my-font-size)
+ doom-font (font-spec :family "RecursiveMnCslSt Nerd Font" :size my-font-size)
+ ;; doom-font (font-spec :family "Iosevka Nerd Font" :size my-font-size)
+ ;; doom-font (font-spec :family "Sarasa Mono SC" :size my-font-size)
  ;; doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
- doom-variable-pitch-font (font-spec :family "BlexMono Nerd Font" :size my-font-size)
+ doom-variable-pitch-font (font-spec :family "Sarasa Gothic SC" :size my-font-size)
  doom-unicode-font (font-spec :family  "Joypixels" :size my-font-size))
 
 (defun my-cjk-font()
@@ -47,10 +49,16 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-;; (setq doom-dark+-blue-modeline t)
-;; (setq doom-theme 'doom-dark+)
-(setq doom-theme 'modus-vivendi-tritanopia)
-;; (add-to-list 'default-frame-alist '(alpha-background . 90))
+(setq doom-dark+-blue-modeline t)
+(setq doom-theme 'catppuccin)
+(setq catppuccin-flavor 'latte) ;; or 'latte, 'frappe, 'macchiato, or 'mocha
+(with-eval-after-load 'doom-themes
+  (doom-themes-treemacs-config))
+
+
+;; (setq vscode-dark-plus-box-org-todo nil)
+;; (setq doom-theme 'vscode-dark-plus)
+;; (add-to-list 'default-frame-alist '(alpha-background . 79))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -116,6 +124,12 @@
 ;; Word wrap support!
 (setq word-wrap-by-category t)
 
+(setq browse-url-browser-function 'browse-url-chrome)
+
+(after! treemacs
+  (evil-set-command-properties #'treemacs-RET-action :jump t)
+  (evil-set-command-properties #'treemacs-visit-node-default :jump t))
+
 (after! org
   (use-package org-protocol
     :config
@@ -142,6 +156,9 @@
 
   (setq org-tags-column 0)
   (setq org-startup-folded 'show2levels)
+
+  (setq-default org-hugo-auto-set-lastmod t)
+  (setq-default org-hugo-suppress-lastmod-period 1382400.0) ; do not update 'lastmod' within 16 days
 
   (setq org-beamer-frame-default-options "")
   (setq org-export-with-sub-superscripts nil)
@@ -185,6 +202,15 @@
 (use-package vterm
   :commands #'vterm
   :custom (vterm-shell "/usr/bin/fish"))
+
+(use-package ellama
+  :init
+  ;; setup key bindings
+  (setopt ellama-keymap-prefix "C-c e")
+  ;; language you want ellama to translate to
+  (setopt ellama-language "Chinese")
+  ;; could be llm-openai for example
+  (require 'llm-ollama))
 
 (after! org-roam
   ;; Setting default filename of new roam node.
@@ -276,37 +302,38 @@
 
 ;; UI
 (setq evil-insert-state-cursor 'bar)
-(if (modulep! :tools lsp +eglot)
-    ;; eglot was enable
-    (after! eglot
-      (add-to-list 'eglot-server-programs
-                   '((c-mode c++-mode)
-                     . ("clangd"
-                        "-j=8"
-                        "--log=error"
-                        "--malloc-trim"
-                        "--background-index"
-                        "--clang-tidy"
-                        "--cross-file-rename"
-                        "--completion-style=detailed"
-                        "--pch-storage=memory"
-                        ;; "--header-insertion=never"
-                        "--header-insertion-decorators=0")))
-      (use-package! breadcrumb
-        :config
-        (add-hook! 'eglot-managed-mode-hook #'breadcrumb-local-mode)))
-  ;; lsp-mode was enable
-  (after! lsp-mode
-    (setq +format-with-lsp t)
+;; (if (modulep! :tools lsp +eglot)
+;;     ;; eglot was enable
+;;     (after! eglot
+;;       (add-to-list 'eglot-server-programs
+;;                    '((c-mode c++-mode)
+;;                      . ("clangd"
+;;                         "-j=8"
+;;                         "--log=error"
+;;                         "--malloc-trim"
+;;                         "--background-index"
+;;                         "--clang-tidy"
+;;                         "--cross-file-rename"
+;;                         "--completion-style=detailed"
+;;                         "--pch-storage=memory"
+;;                         ;; "--header-insertion=never"
+;;                         "--header-insertion-decorators=0")))
+;;       (use-package! breadcrumb
+;;         :config
+;;         (add-hook! 'eglot-managed-mode-hook #'breadcrumb-local-mode)))
+;;   ;; lsp-mode was enable
+;;   (after! lsp-mode
+;;     (setq +format-with-lsp t)
 
-    (with-eval-after-load 'lsp-clangd
-      (add-to-list 'lsp-clients-clangd-args "--header-insertion=never"))
+;;     (with-eval-after-load 'lsp-clangd
+;;       (add-to-list 'lsp-clients-clangd-args "--header-insertion=never"))
 
-    (add-hook 'lsp-mode-hook #'lsp-headerline-breadcrumb-mode)
+;;     (add-hook 'lsp-mode-hook #'lsp-headerline-breadcrumb-mode)
 
-    (setq lsp-inlay-hint-enable t)
-    (dolist (hook '(c++-mode-hook c-mode-hook python-mode-hook rustic-mode-hook))
-      (add-hook hook #'lsp-inlay-hints-mode))))
+;;     (setq lsp-inlay-hint-enable t)
+;;     (dolist (hook '(c++-mode-hook c-mode-hook python-mode-hook rustic-mode-hook))
+;;       (add-hook hook #'lsp-inlay-hints-mode))))
+
 (use-package! treemacs
   :commands 'treemacs
   :init
@@ -315,127 +342,142 @@
   (treemacs-project-follow-mode))
 (when (modulep! :tools lsp)
   (use-package! citre
+    :custom
+    (citre-ctags-program "/usr/bin/ctags")
+    (citre-readtags-program "/usr/bin/readtags")
+    ;; (citre-gtags-program "/usr/bin/gtags")
+    ;; (citre-global-program "/usr/bin/global")
+    (citre-default-create-tags-file-location 'global-cache)
+
     :init
     (map! :leader :desc "Citre jump" :n "c ." #'citre-jump)
     (map! :leader :desc "Citre peek" :n "c /" #'citre-peek)
     (map! :leader :desc "Citre update" :n "c u" #'citre-update-this-tags-file)
 
-    :commands (xref-find-def
-               xref-find-definitions
-               citre-jump
-               citre-peek
-               citre-ace-peek
-               citre-update-this-tags-file)
+    ;; :commands (xref-find-def
+    ;;            xref-find-definitions
+    ;;            citre-jump
+    ;;            citre-jump-back
+    ;;            citre-peek
+    ;;            citre-ace-peek
+    ;;            citre-update-this-tags-file)
+
     :config
     (require 'citre-config)
 
-    ;; Use Citre xref backend as a fallback
-    (define-advice xref--create-fetcher (:around (-fn &rest -args) fallback)
-      (let ((fetcher (apply -fn -args))
-            (citre-fetcher
-             (let ((xref-backend-functions '(citre-xref-backend t)))
-               (apply -fn -args))))
-        (lambda ()
-          (or (with-demoted-errors "%s, fallback to citre"
-                (funcall fetcher))
-              (funcall citre-fetcher)))))
+    (evil-add-command-properties #'citre-jump :jump t)
+    (evil-add-command-properties #'citre-jump-to-reference :jump t)
 
-    ;; Combine completions from Citre and lsp/eglot
-    (defmacro citre-backend-to-company-backend (backend)
-      "Create a company backend from Citre completion backend BACKEND.
-The result is a company backend called
-`company-citre-<backend>' (like `company-citre-tags') and can be
-used in `company-backends'."
-      (let ((backend-name (intern (concat "company-citre-" (symbol-name backend))))
-            (docstring (concat "`company-mode' backend from the `"
-                               (symbol-name backend)
-                               "' Citre backend.\n"
-                               "`citre-mode' needs to be enabled to use this.")))
-        `(defun ,backend-name (command &optional arg &rest ignored)
-           ,docstring
-           (pcase command
-             ('interactive (company-begin-backend ',backend-name))
-             ('prefix (and (bound-and-true-p citre-mode)
-                           (citre-backend-usable-p ',backend)
-                           ;; We shouldn't use this as it's defined for getting
-                           ;; definitions/references.  But the Citre completion
-                           ;; backend design is not fully compliant with company's
-                           ;; design so there's no simple "right" solution, and this
-                           ;; works for tags/global backends.
-                           (or (citre-get-symbol-at-point-for-backend ',backend)
-                               'stop)))
-             ('meta (citre-get-property 'signature arg))
-             ('annotation (citre-get-property 'annotation arg))
-             ('candidates (let ((citre-completion-backends '(,backend)))
-                            (all-completions arg (nth 2 (citre-completion-at-point)))))))))
-    (citre-backend-to-company-backend tags)
-    (citre-backend-to-company-backend global)
-    (setq company-backends '((company-capf
-                              company-citre-tags
-                              company-citre-global
-                              :with company-yasnippet
-                              :separate)))))
+    ;; Directly set, would fallback to default when failed.
+    (set-lookup-handlers! '(c++-mode c-mode)
+      :definition #'citre-jump
+      :references #'citre-jump-to-reference)
+
+    ;;     ;; Use Citre xref backend as a fallback
+    ;;     (define-advice xref--create-fetcher (:around (-fn &rest -args) fallback)
+    ;;       (let ((fetcher (apply -fn -args))
+    ;;             (citre-fetcher
+    ;;              (let ((xref-backend-functions '(citre-xref-backend t)))
+    ;;                (apply -fn -args))))
+    ;;         (lambda ()
+    ;;           (or (with-demoted-errors "%s, fallback to citre"
+    ;;                 (funcall fetcher))
+    ;;               (funcall citre-fetcher)))))
+
+    ;;     ;; Combine completions from Citre and lsp/eglot
+    ;;     (defmacro citre-backend-to-company-backend (backend)
+    ;;       "Create a company backend from Citre completion backend BACKEND.
+    ;; The result is a company backend called
+    ;; `company-citre-<backend>' (like `company-citre-tags') and can be
+    ;; used in `company-backends'."
+    ;;       (let ((backend-name (intern (concat "company-citre-" (symbol-name backend))))
+    ;;             (docstring (concat "`company-mode' backend from the `"
+    ;;                                (symbol-name backend)
+    ;;                                "' Citre backend.\n"
+    ;;                                "`citre-mode' needs to be enabled to use this.")))
+    ;;         `(defun ,backend-name (command &optional arg &rest ignored)
+    ;;            ,docstring
+    ;;            (pcase command
+    ;;              ('interactive (company-begin-backend ',backend-name))
+    ;;              ('prefix (and (bound-and-true-p citre-mode)
+    ;;                            (citre-backend-usable-p ',backend)
+    ;;                            ;; We shouldn't use this as it's defined for getting
+    ;;                            ;; definitions/references.  But the Citre completion
+    ;;                            ;; backend design is not fully compliant with company's
+    ;;                            ;; design so there's no simple "right" solution, and this
+    ;;                            ;; works for tags/global backends.
+    ;;                            (or (citre-get-symbol-at-point-for-backend ',backend)
+    ;;                                'stop)))
+    ;;              ('meta (citre-get-property 'signature arg))
+    ;;              ('annotation (citre-get-property 'annotation arg))
+    ;;              ('candidates (let ((citre-completion-backends '(,backend)))
+    ;;                             (all-completions arg (nth 2 (citre-completion-at-point)))))))))
+    ;;     (citre-backend-to-company-backend tags)
+    ;;     (citre-backend-to-company-backend global)
+    ;;     (setf (alist-get 'prog-mode +company-backend-alist)
+    ;;           '(company-capf
+    ;;              company-citre-tags
+    ;;              company-citre-global
+    ;;              :with company-yasnippet
+    ;;              :separate))
+    ))
 
 ;; Tabnine
-;; (use-package! company-tabnine
-;;   :after company
-;;   :config
-;;   (after! company
-;;     (setq +lsp-company-backends '(company-tabnine :separate company-capf company-yasnippet))
-;;     (setq company-show-numbers t)
-;;     (setq company-idle-delay 0)))
-
-(after! company
-  (setq company-tooltip-minimum-width 100)
-  (setq company-tooltip-maximum-width 100)
-  (setq +lsp-company-backends '(company-capf :separate company-yasnippet))
-  (add-to-list 'company-global-modes 'org-mode t))
+(use-package! company-tabnine
+  :when (modulep! :completion company)
+  :config
+  (after! company
+    (setq company-tooltip-minimum-width 100)
+    (setq company-tooltip-maximum-width 100)
+    (setq company-show-numbers t)
+    (setq company-idle-delay 0.5))
+  (set-company-backend! 'prog-mode
+    '(company-capf :separate company-tabnine company-yasnippet)))
 
 (unless (modulep! :editor evil)
   (setq-default doom-leader-alt-key "M-SPC")
   (setq-default doom-localleader-alt-key "M-SPC m"))
 
-;; FIXME: lsp-bridge optional
-;; (unless (or (modulep! :tools lsp)
-;;             (modulep! :complete company))
-;;   (use-package! lsp-bridge
-;;     :hook
-;;     (python-base-mode . lsp-bridge-mode)
-;;     (c++-mode . lsp-bridge-mode)
-;;     (c++-ts-mode . lsp-bridge-mode)
-;;     (rustic-mode . lsp-bridge-mode)
+(when (modulep! :tools lsp +eglot)
+  (use-package eglot-booster
+    :after eglot
+    :config (eglot-booster-mode)))
 
-;;     :init
-;;     (require 'yasnippet)
-;;     (yas-global-mode 1)
+;; (use-package! lsp-bridge
+;;   :config
+;;   (setq lsp-bridge-enable-log nil)
+;;   (global-lsp-bridge-mode)
 
-;;     (require 'lsp-bridge)
-;;     (global-lsp-bridge-mode)
-;;     (setq lsp-bridge-c-lsp-server "clangd")
-;;     (setq acm-enable-yas nil)
-;;     (setq acm-enable-tabnine nil)
-;;     (setq acm-enable-codeium nil)
-;;     ;; (setq lsp-bridge-signature-show-function 'lsp-bridge-signature-posframe)
-;;     (setq lsp-bridge-enable-hover-diagnostic t)
+;;   (setq acm-enable-citre t)
+;;   (setq acm-enable-yas nil)
+;;   (setq acm-enable-codeium t)
+;;   (setq acm-enable-search-file-words nil)
+;;   (setq acm-enable-tabnine nil)
+;;   (setq lsp-bridge-python-command "pypy3")
+;;   (setq lsp-bridge-remote-python-file "/home/t_user/ZengNian/lsp-bridge/lsp-bridge.py")
+;;   (setq lsp-bridge-user-ssh-private-key "~/.ssh/id_rsa_lanqu")
 
-;;     :config
-;;     (map!
-;;      :mode prog-mode
-;;      (:leader
-;;       :desc "Rename symbol" "cr" #'lsp-bridge-rename
-;;       :desc "Diagnostics list" "cx" #'lsp-bridge-diagnostic-list
-;;       :desc "Code actions" "ca" #'lsp-bridge-code-action
-;;       :desc "Format document" "cf" #'lsp-bridge-code-format))
+;;   (unless (display-graphic-p)
+;;     (with-eval-after-load 'acm
+;;       (require 'acm-terminal)))
 
-;;     (add-to-list '+lookup-definition-functions #'lsp-bridge-find-def)
-;;     (add-to-list '+lookup-implementations-functions #'lsp-bridge-find-impl)
-;;     (add-to-list '+lookup-references-functions #'lsp-bridge-find-references)
-;;     (add-to-list '+lookup-type-definition-functions #'lsp-bridge-find-type-def)
-;;     (add-to-list '+lookup-documentation-functions #'lsp-bridge-popup-documentation)
+;;   ;; disable lsp support on doom emacs
+;;   (when (featurep! :tools lsp)
+;;     (advice-add #'eglot-ensure :override (lambda () t)))
 
-;;     (unless (display-graphic-p)
-;;       (with-eval-after-load 'acm
-;;         (require 'acm-terminal)))))
+;;   (map! :map lsp-bridge-mode-map :leader "ca" #'lsp-bridge-code-action)
+;;   (map! :map lsp-bridge-mode-map :leader "cx" #'lsp-bridge-diagnostic-list)
+;;   (add-to-list 'evil-emacs-state-modes 'lsp-bridge-ref-mode)
+
+;;   (set-lookup-handlers!
+;;     'lsp-bridge-mode
+;;     :definition #'lsp-bridge-find-def
+;;     :implementations #'lsp-bridge-find-impl
+;;     :type-definition #'lsp-bridge-find-type-def
+;;     :references #'lsp-bridge-find-type-def
+;;     :documentation #'lsp-bridge-show-documentation
+;;     :file nil
+;;     :async t))
 
 (defun +display-vga-p ()
   (not (char-displayable-p ?里)))
@@ -494,6 +536,7 @@ used in `company-backends'."
 (use-package! rime-regexp
   :after rime
   :config
+  (setq rime-regexp--max-code-length 4)
   (rime-regexp-mode))
 
 ;; VGA support
@@ -528,7 +571,7 @@ used in `company-backends'."
 
 (use-package! fanyi
   :commands (fanyi-dwim2 fanyi-dwim)
-  :config
+  :init
   (map! :leader :desc "Fanyi words" :nie "s y" #'fanyi-dwim2))
 
 ;; Pixel scrolling
@@ -550,44 +593,46 @@ used in `company-backends'."
 ;; (defalias 'scroll-down-command '+pixel-scroll-interpolate-up)
 
 ;; Disable mouse
-(use-package! disable-mouse
-  :config
-  (global-disable-mouse-mode)
-  (mapc #'disable-mouse-in-keymap
-        (list evil-motion-state-map
-              evil-normal-state-map
-              evil-visual-state-map
-              evil-insert-state-map)))
+;; (use-package! disable-mouse
+;;   :config
+;;   (global-disable-mouse-mode)
+;;   (mapc #'disable-mouse-in-keymap
+;;         (list evil-motion-state-map
+;;               evil-normal-state-map
+;;               evil-visual-state-map
+;;               evil-insert-state-map)))
 
 ;; From https://unix.stackexchange.com/a/681480 to specify if on wayland or on xorg
-(when (string-prefix-p "wayland" (getenv "WAYLAND_DISPLAY"))     ; on Wayland
-  (use-package xclip
-    :disabled t
-    :config
-    (xclip-mode -1))
+(defun my/tty-clipboard-configure ()
+  (when (string-prefix-p "wayland" (getenv "WAYLAND_DISPLAY"))     ; on Wayland
+    (use-package xclip
+      :disabled t
+      :config
+      (xclip-mode -1))
 
-  ;; https://github.com/Crandel/home/blob/master/.config/emacs/recipes/base-rcp.el#L351)
-  (use-package select
-    :custom
-    (save-interprogram-paste-before-kill t)
-    (select-enable-clipboard             t)
-    (selection-coding-system             'utf-8)
-    :init
-    (setq-default wl-copy-process nil)
-    (when (string-prefix-p "wayland" (getenv "WAYLAND_DISPLAY"))
-      (defun wl-copy-handler (text)
-        (setq wl-copy-process (make-process :name "wl-copy"
-                                            :buffer nil
-                                            :command '("wl-copy" "-f" "-n")
-                                            :connection-type 'pipe))
-        (process-send-string wl-copy-process text)
-        (process-send-eof wl-copy-process))
-      (defun wl-paste-handler ()
-        (if (and wl-copy-process (process-live-p wl-copy-process))
-            nil ; should return nil if we're the current paste owner
-          (shell-command-to-string "wl-paste -n | tr -d \r")))
-      (setq interprogram-cut-function 'wl-copy-handler
-            interprogram-paste-function 'wl-paste-handler))))
+    ;; https://github.com/Crandel/home/blob/master/.config/emacs/recipes/base-rcp.el#L351)
+    (use-package select
+      :custom
+      (save-interprogram-paste-before-kill t)
+      (select-enable-clipboard             t)
+      (selection-coding-system             'utf-8)
+      :init
+      (setq-default wl-copy-process nil)
+      (when (string-prefix-p "wayland" (getenv "WAYLAND_DISPLAY"))
+        (defun wl-copy-handler (text)
+          (setq wl-copy-process (make-process :name "wl-copy"
+                                              :buffer nil
+                                              :command '("wl-copy" "-f" "-n")
+                                              :connection-type 'pipe))
+          (process-send-string wl-copy-process text)
+          (process-send-eof wl-copy-process))
+        (defun wl-paste-handler ()
+          (if (and wl-copy-process (process-live-p wl-copy-process))
+              nil ; should return nil if we're the current paste owner
+            (shell-command-to-string "wl-paste -n | tr -d \r")))
+        (setq interprogram-cut-function 'wl-copy-handler
+              interprogram-paste-function 'wl-paste-handler)))))
+(add-hook! 'doom-first-file-hook #'my/tty-clipboard-configure)
 
 ;;; mail
 (setq smtpmail-smtp-server "smtp.qq.com" ;; <-- edit this !!!

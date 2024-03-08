@@ -41,11 +41,11 @@
        ;;minimap           ; show a map of the code on the side
        (modeline -light)          ; snazzy, Atom-inspired modeline, plus API
        ;;nav-flash         ; blink cursor line after big motions
-       ;;neotree           ; a project drawer, like NERDTree for vim
+       ;; neotree           ; a project drawer, like NERDTree for vim
        ophints           ; highlight the region an operation acts on
        (popup +defaults)   ; tame sudden yet inevitable temporary windows
        ;;tabs              ; a tab bar for Emacs
-       (treemacs +lsp)          ; a project drawer, like neotree but cooler
+       (treemacs lsp)          ; a project drawer, like neotree but cooler
        ;; unicode           ; extended unicode support for various languages
        (vc-gutter -pretty
                   +diff-hl) ; vcs diff in the fringe
@@ -83,7 +83,8 @@
 
        :checkers
        ;; syntax              ; tasing you for every semicolon you forget
-       ;;(spell +flyspell) ; tasing you for misspelling mispelling
+       ;; (spell -flyspell
+       ;;        +hunspell) ; tasing you for misspelling mispelling
        ;;grammar           ; tasing grammar mistake every you make
 
        :tools
@@ -120,7 +121,7 @@
        ;;agda              ; types of types of types of types...
        ;;beancount         ; mind the GAAP
        (cc +lsp
-           +tree-sitter)         ; C > C++ == 1
+           -tree-sitter)         ; C > C++ == 1
        ;;clojure           ; java with a lisp
        ;;common-lisp       ; if you've seen one lisp, you've seen them all
        ;;coq               ; proofs-as-programs
@@ -163,15 +164,17 @@
        ;;ocaml             ; an objective camel
        (org +roam2
             +noter
+            +hugo
             ;; +pretty
             +dragndrop)               ; organize your plain life in plain text
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
        (python +lsp
-               +conda
+               -conda
+               +pyenv
                +tree-sitter
-               +poetry
+               -poetry
                +pyright)            ; beautiful is better than ugly
        ;; qt                ; the 'cutest' gui framework ever
        ;;racket            ; a DSL for DSLs

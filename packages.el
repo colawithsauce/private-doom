@@ -51,6 +51,8 @@
 
 ;; (package! org-modern)
 ;; (package! nov)
+(package! vscode-dark-plus-theme)
+(unpin! doom-themes)
 
 ;; (package! org-mind-map)
 (package! disable-mouse
@@ -66,19 +68,37 @@
 ;; (package! nerd-icons)
 ;; (unpin! doom-modeline)
 
-;; lsp-bridge
-;; (package! lsp-bridge
-;;           :recipe (:host github :repo "manateelazycat/lsp-bridge"
-;;                    :files ("*")))
-;; (package! acm :recipe (:host github :repo "manateelazycat/lsp-bridge" :files ("acm")))
-;; ;; 如果没有上面这一行，安装 acm-terminal 的时候 doom sync 会报错，提示找不到 acm 这个包，不装 acm-terminal 不$
-;; (package! popon)
-;; (package! acm-terminal :recipe (:host github :repo "twlz0ne/acm-terminal"))
+;; (when (package! lsp-bridge
+;;         :recipe (:host github
+;;                  :repo "manateelazycat/lsp-bridge"
+;;                  :branch "master"
+;;                  :files ("*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
+;;                  ;; do not perform byte compilation or native compilation for lsp-bridge
+;;                  :build (:not compile)))
 
-;; (package! company-tabnine)
+;;   (package! eglot :disable t)
+
+;;   (unless (display-graphic-p)
+;;     (package! popon
+;;               :recipe (:host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
+;;     (package! acm-terminal
+;;               :recipe (:host github :repo "twlz0ne/acm-terminal"))))
+
+(package! catppuccin-theme)
+
+(package! ellama)
+
+(when (modulep! :tools lsp)
+  (package! emacs-lsp-booster :recipe (:host github :repo "blahgeek/emacs-lsp-booster"))
+  (when (modulep! :tools lsp +eglot)
+    (package! eglot-booster :recipe (:host github :repo "jdtsmith/eglot-booster"))))
+
+(package! company-tabnine)
+
+;; (package! anaconda-mode :disable t)
 (package! cuda-mode :disable t)
 (package! rime)
-(package! telega :disable t)
+(package! telega)
 (package! breadcrumb
   :recipe (:host github
            :repo "joaotavora/breadcrumb"))
@@ -107,10 +127,12 @@
   :recipe (:host github
            :repo "Elilif/emacs-anki-helper"))
 
+(package! cal-china-x)
+
 (package! ox-pandoc)
 
-(when (modulep! :tools lsp +eglot)
-  (unpin! eglot))
+;; (when (modulep! :tools lsp +eglot)
+;;   (unpin! eglot))
 
 ;; BUG: https://github.com/doomemacs/doomemacs/issues/7334
 ;; (package! org

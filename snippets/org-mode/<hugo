@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: hugo header
+# key: <hugo
+# --
+#+hugo_custom_front_matter: :mathjax ${1:false}
+#+hugo_tags: ${2:None}
+#+hugo_categories: ${3:$$(yas-choose-value '("Emacs" "HPC" "CPP" "Philosophy" "articles"))}
+#+DATE: ${4:`(format-time-string "[%Y-%m-%d %a %H:%M]" (current-time))`}
+$0
