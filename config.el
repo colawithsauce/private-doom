@@ -50,8 +50,8 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 (setq doom-dark+-blue-modeline t)
-(setq doom-theme 'catppuccin)
 (setq catppuccin-flavor 'latte) ;; or 'latte, 'frappe, 'macchiato, or 'mocha
+(setq doom-theme 'doom-one-light)
 (with-eval-after-load 'doom-themes
   (doom-themes-treemacs-config))
 
@@ -62,7 +62,7 @@
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type t)
+(setq display-line-numbers-type 'relative)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -422,62 +422,62 @@
     ;;              :separate))
     ))
 
-;; Tabnine
-(use-package! company-tabnine
-  :when (modulep! :completion company)
-  :config
-  (after! company
-    (setq company-tooltip-minimum-width 100)
-    (setq company-tooltip-maximum-width 100)
-    (setq company-show-numbers t)
-    (setq company-idle-delay 0.5))
-  (set-company-backend! 'prog-mode
-    '(company-capf :separate company-tabnine company-yasnippet)))
-
 (unless (modulep! :editor evil)
   (setq-default doom-leader-alt-key "M-SPC")
   (setq-default doom-localleader-alt-key "M-SPC m"))
 
-(when (modulep! :tools lsp +eglot)
-  (use-package eglot-booster
-    :after eglot
-    :config (eglot-booster-mode)))
+;; (when (modulep! :tools lsp +eglot)
+;;   (use-package eglot-booster
+;;     :after eglot
+;;     :config (eglot-booster-mode)))
 
-;; (use-package! lsp-bridge
+;; Tabnine
+;; (use-package! company-tabnine
+;;   :when (modulep! :completion company)
 ;;   :config
-;;   (setq lsp-bridge-enable-log nil)
-;;   (global-lsp-bridge-mode)
+;;   (after! company
+;;     (setq company-tooltip-minimum-width 100)
+;;     (setq company-tooltip-maximum-width 100)
+;;     (setq company-show-numbers t)
+;;     (setq company-idle-delay 0.025))
+;;   (set-company-backend! 'prog-mode
+;;     '(company-capf :separate company-tabnine company-yasnippet)))
 
-;;   (setq acm-enable-citre t)
-;;   (setq acm-enable-yas nil)
-;;   (setq acm-enable-codeium t)
-;;   (setq acm-enable-search-file-words nil)
-;;   (setq acm-enable-tabnine nil)
-;;   (setq lsp-bridge-python-command "pypy3")
-;;   (setq lsp-bridge-remote-python-file "/home/t_user/ZengNian/lsp-bridge/lsp-bridge.py")
-;;   (setq lsp-bridge-user-ssh-private-key "~/.ssh/id_rsa_lanqu")
+(use-package! lsp-bridge
+  :config
+  (setq lsp-bridge-enable-log nil)
+  (global-lsp-bridge-mode)
 
-;;   (unless (display-graphic-p)
-;;     (with-eval-after-load 'acm
-;;       (require 'acm-terminal)))
+  (setq acm-enable-citre t)
+  (setq acm-enable-yas nil)
+  (setq acm-enable-codeium t)
+  (setq acm-enable-search-file-words nil)
+  (setq acm-enable-tabnine nil)
+  (setq lsp-bridge-python-command "pypy3")
+  (setq lsp-bridge-remote-python-file "/home/t_user/ZengNian/lsp-bridge/lsp-bridge.py")
+  (setq lsp-bridge-user-ssh-private-key "~/.ssh/id_rsa_lanqu")
 
-;;   ;; disable lsp support on doom emacs
-;;   (when (featurep! :tools lsp)
-;;     (advice-add #'eglot-ensure :override (lambda () t)))
+  (unless (display-graphic-p)
+    (with-eval-after-load 'acm
+      (require 'acm-terminal)))
 
-;;   (map! :map lsp-bridge-mode-map :leader "ca" #'lsp-bridge-code-action)
-;;   (map! :map lsp-bridge-mode-map :leader "cx" #'lsp-bridge-diagnostic-list)
-;;   (add-to-list 'evil-emacs-state-modes 'lsp-bridge-ref-mode)
+  ;; disable lsp support on doom emacs
+  (when (featurep! :tools lsp)
+    (advice-add #'eglot-ensure :override (lambda () t)))
 
-;;   (set-lookup-handlers!
-;;     'lsp-bridge-mode
-;;     :definition #'lsp-bridge-find-def
-;;     :implementations #'lsp-bridge-find-impl
-;;     :type-definition #'lsp-bridge-find-type-def
-;;     :references #'lsp-bridge-find-type-def
-;;     :documentation #'lsp-bridge-show-documentation
-;;     :file nil
-;;     :async t))
+  (map! :map lsp-bridge-mode-map :leader "ca" #'lsp-bridge-code-action)
+  (map! :map lsp-bridge-mode-map :leader "cx" #'lsp-bridge-diagnostic-list)
+  (add-to-list 'evil-emacs-state-modes 'lsp-bridge-ref-mode)
+
+  (set-lookup-handlers!
+    'lsp-bridge-mode
+    :definition #'lsp-bridge-find-def
+    :implementations #'lsp-bridge-find-impl
+    :type-definition #'lsp-bridge-find-type-def
+    :references #'lsp-bridge-find-type-def
+    :documentation #'lsp-bridge-show-documentation
+    :file nil
+    :async t))
 
 (defun +display-vga-p ()
   (not (char-displayable-p ?里)))
