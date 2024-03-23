@@ -26,18 +26,18 @@
  ;; doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
  ;; doom-font (font-spec :family "SFMono Nerd Font Mono" :size my-font-size :weight 'medium)
  ;; doom-font (font-spec :family "IBM Plex Mono" :size my-font-size :weight 'medium)
- doom-font (font-spec :family "RecursiveMnCslSt Nerd Font" :size my-font-size)
- ;; doom-font (font-spec :family "Iosevka Nerd Font" :size my-font-size)
+ doom-font (font-spec :family "RecursiveMnLnrSt Nerd Font" :size my-font-size)
  ;; doom-font (font-spec :family "Sarasa Mono SC" :size my-font-size)
  ;; doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
  doom-variable-pitch-font (font-spec :family "Sarasa Gothic SC" :size my-font-size)
  doom-unicode-font (font-spec :family  "Joypixels" :size my-font-size))
 
 (defun my-cjk-font()
-  (add-to-list 'face-font-rescale-alist '("Sarasa*" . 0.9))
   (dolist (charset '(kana han cjk-misc symbol bopomofo))
-    ;; (set-fontset-font t charset (font-spec :family "LXGW Neo XiHei Screen"))
-    (set-fontset-font t charset (font-spec :family "LXGW WenKai Mono"))))
+    (set-fontset-font t charset (font-spec :family "LXGW WenKai Mono"))
+    ;; (set-fontset-font t charset (font-spec :family "Jigmo"))
+    ;; (set-fontset-font t charset (font-spec :family "LXGW Neo XiHei Screen Full"))
+    ))
 
 (add-hook! 'after-setting-font-hook #'my-cjk-font)
 ;;
@@ -49,9 +49,9 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-dark+-blue-modeline t)
+;; (setq doom-dark+-blue-modeline t)
 (setq catppuccin-flavor 'latte) ;; or 'latte, 'frappe, 'macchiato, or 'mocha
-(setq doom-theme 'doom-one-light)
+(setq doom-theme 'catppuccin)
 (with-eval-after-load 'doom-themes
   (doom-themes-treemacs-config))
 
@@ -350,6 +350,7 @@
     (citre-default-create-tags-file-location 'global-cache)
 
     :init
+    (map! :desc "Citre jump" :n "C-]" #'citre-jump)
     (map! :leader :desc "Citre jump" :n "c ." #'citre-jump)
     (map! :leader :desc "Citre peek" :n "c /" #'citre-peek)
     (map! :leader :desc "Citre update" :n "c u" #'citre-update-this-tags-file)
@@ -371,65 +372,16 @@
     ;; Directly set, would fallback to default when failed.
     (set-lookup-handlers! '(c++-mode c-mode)
       :definition #'citre-jump
-      :references #'citre-jump-to-reference)
-
-    ;;     ;; Use Citre xref backend as a fallback
-    ;;     (define-advice xref--create-fetcher (:around (-fn &rest -args) fallback)
-    ;;       (let ((fetcher (apply -fn -args))
-    ;;             (citre-fetcher
-    ;;              (let ((xref-backend-functions '(citre-xref-backend t)))
-    ;;                (apply -fn -args))))
-    ;;         (lambda ()
-    ;;           (or (with-demoted-errors "%s, fallback to citre"
-    ;;                 (funcall fetcher))
-    ;;               (funcall citre-fetcher)))))
-
-    ;;     ;; Combine completions from Citre and lsp/eglot
-    ;;     (defmacro citre-backend-to-company-backend (backend)
-    ;;       "Create a company backend from Citre completion backend BACKEND.
-    ;; The result is a company backend called
-    ;; `company-citre-<backend>' (like `company-citre-tags') and can be
-    ;; used in `company-backends'."
-    ;;       (let ((backend-name (intern (concat "company-citre-" (symbol-name backend))))
-    ;;             (docstring (concat "`company-mode' backend from the `"
-    ;;                                (symbol-name backend)
-    ;;                                "' Citre backend.\n"
-    ;;                                "`citre-mode' needs to be enabled to use this.")))
-    ;;         `(defun ,backend-name (command &optional arg &rest ignored)
-    ;;            ,docstring
-    ;;            (pcase command
-    ;;              ('interactive (company-begin-backend ',backend-name))
-    ;;              ('prefix (and (bound-and-true-p citre-mode)
-    ;;                            (citre-backend-usable-p ',backend)
-    ;;                            ;; We shouldn't use this as it's defined for getting
-    ;;                            ;; definitions/references.  But the Citre completion
-    ;;                            ;; backend design is not fully compliant with company's
-    ;;                            ;; design so there's no simple "right" solution, and this
-    ;;                            ;; works for tags/global backends.
-    ;;                            (or (citre-get-symbol-at-point-for-backend ',backend)
-    ;;                                'stop)))
-    ;;              ('meta (citre-get-property 'signature arg))
-    ;;              ('annotation (citre-get-property 'annotation arg))
-    ;;              ('candidates (let ((citre-completion-backends '(,backend)))
-    ;;                             (all-completions arg (nth 2 (citre-completion-at-point)))))))))
-    ;;     (citre-backend-to-company-backend tags)
-    ;;     (citre-backend-to-company-backend global)
-    ;;     (setf (alist-get 'prog-mode +company-backend-alist)
-    ;;           '(company-capf
-    ;;              company-citre-tags
-    ;;              company-citre-global
-    ;;              :with company-yasnippet
-    ;;              :separate))
-    ))
+      :references #'citre-jump-to-reference)))
 
 (unless (modulep! :editor evil)
   (setq-default doom-leader-alt-key "M-SPC")
   (setq-default doom-localleader-alt-key "M-SPC m"))
 
-;; (when (modulep! :tools lsp +eglot)
-;;   (use-package eglot-booster
-;;     :after eglot
-;;     :config (eglot-booster-mode)))
+(when (modulep! :tools lsp +eglot)
+  (use-package eglot-booster
+    :after eglot
+    :config (eglot-booster-mode)))
 
 ;; Tabnine
 ;; (use-package! company-tabnine
@@ -443,41 +395,41 @@
 ;;   (set-company-backend! 'prog-mode
 ;;     '(company-capf :separate company-tabnine company-yasnippet)))
 
-(use-package! lsp-bridge
-  :config
-  (setq lsp-bridge-enable-log nil)
-  (global-lsp-bridge-mode)
+;; (use-package! lsp-bridge
+;;   :config
+;;   (setq lsp-bridge-enable-log nil)
+;;   (global-lsp-bridge-mode)
 
-  (setq acm-enable-citre t)
-  (setq acm-enable-yas nil)
-  (setq acm-enable-codeium t)
-  (setq acm-enable-search-file-words nil)
-  (setq acm-enable-tabnine nil)
-  (setq lsp-bridge-python-command "pypy3")
-  (setq lsp-bridge-remote-python-file "/home/t_user/ZengNian/lsp-bridge/lsp-bridge.py")
-  (setq lsp-bridge-user-ssh-private-key "~/.ssh/id_rsa_lanqu")
+;;   (setq acm-enable-citre t)
+;;   (setq acm-enable-yas nil)
+;;   (setq acm-enable-codeium t)
+;;   (setq acm-enable-search-file-words nil)
+;;   (setq acm-enable-tabnine nil)
+;;   (setq lsp-bridge-python-command "pypy3")
+;;   (setq lsp-bridge-remote-python-file "/home/t_user/ZengNian/lsp-bridge/lsp-bridge.py")
+;;   (setq lsp-bridge-user-ssh-private-key "~/.ssh/id_rsa_lanqu")
 
-  (unless (display-graphic-p)
-    (with-eval-after-load 'acm
-      (require 'acm-terminal)))
+;;   (unless (display-graphic-p)
+;;     (with-eval-after-load 'acm
+;;       (require 'acm-terminal)))
 
-  ;; disable lsp support on doom emacs
-  (when (featurep! :tools lsp)
-    (advice-add #'eglot-ensure :override (lambda () t)))
+;;   ;; disable lsp support on doom emacs
+;;   (when (featurep! :tools lsp)
+;;     (advice-add #'eglot-ensure :override (lambda () t)))
 
-  (map! :map lsp-bridge-mode-map :leader "ca" #'lsp-bridge-code-action)
-  (map! :map lsp-bridge-mode-map :leader "cx" #'lsp-bridge-diagnostic-list)
-  (add-to-list 'evil-emacs-state-modes 'lsp-bridge-ref-mode)
+;;   (map! :map lsp-bridge-mode-map :leader "ca" #'lsp-bridge-code-action)
+;;   (map! :map lsp-bridge-mode-map :leader "cx" #'lsp-bridge-diagnostic-list)
+;;   (add-to-list 'evil-emacs-state-modes 'lsp-bridge-ref-mode)
 
-  (set-lookup-handlers!
-    'lsp-bridge-mode
-    :definition #'lsp-bridge-find-def
-    :implementations #'lsp-bridge-find-impl
-    :type-definition #'lsp-bridge-find-type-def
-    :references #'lsp-bridge-find-type-def
-    :documentation #'lsp-bridge-show-documentation
-    :file nil
-    :async t))
+;;   (set-lookup-handlers!
+;;     'lsp-bridge-mode
+;;     :definition #'lsp-bridge-find-def
+;;     :implementations #'lsp-bridge-find-impl
+;;     :type-definition #'lsp-bridge-find-type-def
+;;     :references #'lsp-bridge-find-type-def
+;;     :documentation #'lsp-bridge-show-documentation
+;;     :file nil
+;;     :async t))
 
 (defun +display-vga-p ()
   (not (char-displayable-p ?里)))
@@ -532,7 +484,11 @@
   (rime-disable-predicates
    '(rime-predicate-evil-mode-p
      rime-predicate-prog-in-code-p
-     rime-predicate-org-latex-mode-p)))
+     rime-predicate-org-latex-mode-p))
+  :config
+  (setq rime-emacs-module-header-root "~/.nix-profile/include"
+        rime-librime-root "~/.nix-profile"
+        rime-share-data-dir "/usr/share/rime-data"))
 (use-package! rime-regexp
   :after rime
   :config
