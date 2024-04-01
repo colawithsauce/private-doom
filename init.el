@@ -22,11 +22,11 @@
 
        :completion
        ;; (company +childframe)           ; the ultimate code completion backend
-       (corfu +orderless +icons +dabbrev)  ; complete with cap(f), cape and a flying feather!
+       ;; (corfu +orderless +icons +dabbrev)  ; complete with cap(f), cape and a flying feather!
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
        ;;ivy               ; a search engine for love and life
-       (vertico -icons
+       (vertico +icons
                 -childframe)           ; the search engine of the future
 
        :ui
@@ -122,7 +122,7 @@
        ;;agda              ; types of types of types of types...
        ;;beancount         ; mind the GAAP
        (cc +lsp
-           -tree-sitter)         ; C > C++ == 1
+           +tree-sitter)         ; C > C++ == 1
        ;;clojure           ; java with a lisp
        ;;common-lisp       ; if you've seen one lisp, you've seen them all
        ;;coq               ; proofs-as-programs

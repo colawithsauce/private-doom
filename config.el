@@ -50,7 +50,7 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;; (setq doom-dark+-blue-modeline t)
-(setq catppuccin-flavor 'latte) ;; or 'latte, 'frappe, 'macchiato, or 'mocha
+(setq catppuccin-flavor 'frappe) ;; or 'latte, 'frappe, 'macchiato, or 'mocha
 (setq doom-theme 'catppuccin)
 (with-eval-after-load 'doom-themes
   (doom-themes-treemacs-config))
@@ -58,7 +58,7 @@
 
 ;; (setq vscode-dark-plus-box-org-todo nil)
 ;; (setq doom-theme 'vscode-dark-plus)
-;; (add-to-list 'default-frame-alist '(alpha-background . 79))
+(add-to-list 'default-frame-alist '(alpha-background . 89))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -124,7 +124,12 @@
 ;; Word wrap support!
 (setq word-wrap-by-category t)
 
-(setq browse-url-browser-function 'browse-url-chrome)
+(if (executable-find "google-chrome-stable")
+    (setq browse-url-browser-function 'browse-url-chrome)
+  (setq browse-url-browser-function 'browse-url-firefox))
+
+(use-package dabbrev
+  :custom (dabbrev-abbrev-char-regexp "[A-Za-z-_]"))
 
 (after! treemacs
   (evil-set-command-properties #'treemacs-RET-action :jump t)
@@ -201,7 +206,7 @@
       :desc "Slurp sexp" :n ">" #'sp-slurp-hybrid-sexp)
 (use-package vterm
   :commands #'vterm
-  :custom (vterm-shell "/usr/bin/fish"))
+  :custom (vterm-shell "/usr/bin/env bash"))
 
 (use-package ellama
   :init
@@ -378,10 +383,12 @@
   (setq-default doom-leader-alt-key "M-SPC")
   (setq-default doom-localleader-alt-key "M-SPC m"))
 
-(when (modulep! :tools lsp +eglot)
-  (use-package eglot-booster
-    :after eglot
-    :config (eglot-booster-mode)))
+(use-package! treesit-auto
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
 ;; Tabnine
 ;; (use-package! company-tabnine
@@ -395,41 +402,46 @@
 ;;   (set-company-backend! 'prog-mode
 ;;     '(company-capf :separate company-tabnine company-yasnippet)))
 
-;; (use-package! lsp-bridge
-;;   :config
-;;   (setq lsp-bridge-enable-log nil)
-;;   (global-lsp-bridge-mode)
+;; (when (modulep! :tools lsp +eglot)
+;;   (use-package eglot-booster
+;;     :after eglot
+;;     :config (eglot-booster-mode)))
 
-;;   (setq acm-enable-citre t)
-;;   (setq acm-enable-yas nil)
-;;   (setq acm-enable-codeium t)
-;;   (setq acm-enable-search-file-words nil)
-;;   (setq acm-enable-tabnine nil)
-;;   (setq lsp-bridge-python-command "pypy3")
-;;   (setq lsp-bridge-remote-python-file "/home/t_user/ZengNian/lsp-bridge/lsp-bridge.py")
-;;   (setq lsp-bridge-user-ssh-private-key "~/.ssh/id_rsa_lanqu")
+(use-package! lsp-bridge
+  :config
+  (setq lsp-bridge-enable-log nil)
+  (global-lsp-bridge-mode)
 
-;;   (unless (display-graphic-p)
-;;     (with-eval-after-load 'acm
-;;       (require 'acm-terminal)))
+  (setq acm-enable-citre t)
+  (setq acm-enable-yas nil)
+  (setq acm-enable-codeium t)
+  (setq acm-enable-search-file-words nil)
+  (setq acm-enable-tabnine nil)
+  (setq lsp-bridge-python-command "python3")
+  (setq lsp-bridge-enable-inlay-hint t)
+  (setq lsp-bridge-enable-mode-line nil)
 
-;;   ;; disable lsp support on doom emacs
-;;   (when (featurep! :tools lsp)
-;;     (advice-add #'eglot-ensure :override (lambda () t)))
+  (unless (display-graphic-p)
+    (with-eval-after-load 'acm
+      (require 'acm-terminal)))
 
-;;   (map! :map lsp-bridge-mode-map :leader "ca" #'lsp-bridge-code-action)
-;;   (map! :map lsp-bridge-mode-map :leader "cx" #'lsp-bridge-diagnostic-list)
-;;   (add-to-list 'evil-emacs-state-modes 'lsp-bridge-ref-mode)
+  ;; disable lsp support on doom emacs
+  (when (featurep! :tools lsp)
+    (advice-add #'eglot-ensure :override (lambda () t)))
 
-;;   (set-lookup-handlers!
-;;     'lsp-bridge-mode
-;;     :definition #'lsp-bridge-find-def
-;;     :implementations #'lsp-bridge-find-impl
-;;     :type-definition #'lsp-bridge-find-type-def
-;;     :references #'lsp-bridge-find-type-def
-;;     :documentation #'lsp-bridge-show-documentation
-;;     :file nil
-;;     :async t))
+  (map! :map lsp-bridge-mode-map :leader "ca" #'lsp-bridge-code-action)
+  (map! :map lsp-bridge-mode-map :leader "cx" #'lsp-bridge-diagnostic-list)
+  (add-to-list 'evil-emacs-state-modes 'lsp-bridge-ref-mode)
+
+  (set-lookup-handlers!
+    'lsp-bridge-mode
+    :definition #'lsp-bridge-find-def
+    :implementations #'lsp-bridge-find-impl
+    :type-definition #'lsp-bridge-find-type-def
+    :references #'lsp-bridge-find-type-def
+    :documentation #'lsp-bridge-show-documentation
+    :file nil
+    :async t))
 
 (defun +display-vga-p ()
   (not (char-displayable-p ?里)))
@@ -489,6 +501,7 @@
   (setq rime-emacs-module-header-root "~/.nix-profile/include"
         rime-librime-root "~/.nix-profile"
         rime-share-data-dir "/usr/share/rime-data"))
+
 (use-package! rime-regexp
   :after rime
   :config
