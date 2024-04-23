@@ -61,39 +61,38 @@
 (package! ccls
   :disable t)
 
+(package! gptel)
+
 ;; (package! xclip :disable t)
 
-(when (package! lsp-bridge
-        :recipe (:host github
-                 :repo "manateelazycat/lsp-bridge"
-                 :branch "master"
-                 :files ("*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
-                 ;; do not perform byte compilation or native compilation for lsp-bridge
-                 :build (:not compile)))
+;; (when (package! lsp-bridge
+;;         :recipe (:host github
+;;                  :repo "manateelazycat/lsp-bridge"
+;;                  :branch "master"
+;;                  :files ("*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
+;;                  ;; do not perform byte compilation or native compilation for lsp-bridge
+;;                  :build (:not compile)))
 
-  (package! eglot :disable t)
+;;   (package! eglot :disable t)
 
-  (unless (display-graphic-p)
-    (package! popon
-      :recipe (:host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
-    (package! acm-terminal
-      :recipe (:host github :repo "twlz0ne/acm-terminal"))))
+;;   (unless (display-graphic-p)
+;;     (package! popon
+;;       :recipe (:host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
+;;     (package! acm-terminal
+;;       :recipe (:host github :repo "twlz0ne/acm-terminal"))))
 
-;; (when (modulep! :tools lsp)
-;;   (package! emacs-lsp-booster :recipe (:host github :repo "blahgeek/emacs-lsp-booster"))
-;;   (when (modulep! :tools lsp +eglot)
-;;     (package! eglot-booster :recipe (:host github :repo "jdtsmith/eglot-booster"))))
+(when (modulep! :tools lsp)
+  (package! emacs-lsp-booster :recipe (:host github :repo "blahgeek/emacs-lsp-booster"))
+  (when (modulep! :tools lsp +eglot)
+    (package! eglot-booster :recipe (:host github :repo "jdtsmith/eglot-booster"))))
 
 (package! catppuccin-theme)
-(package! ellama)
-
 (package! bison-mode
   :recipe (:host github
            :repo "Wilfred/bison-mode"))
 (package! typst-ts-mode
   :recipe (:host sourcehut
            :repo "meow_king/typst-ts-mode"))
-(package! treesit-auto)
 
 ;; (package! company-tabnine)
 (package! llvm :recipe
@@ -103,7 +102,6 @@
 
 ;; (package! anaconda-mode :disable t)
 (package! cuda-mode :disable t)
-(package! rime)
 (package! telega)
 (package! breadcrumb
   :recipe (:host github
@@ -113,9 +111,10 @@
   :recipe (:host github
            :repo "kaiwk/leetcode.el"))
 
-(package! rime-regexp
-  :recipe (:host github
-           :repo "colawithsauce/rime-regexp.el"))
+;; (package! rime)
+;; (package! rime-regexp
+;;   :recipe (:host github
+;;            :repo "colawithsauce/rime-regexp.el"))
 
 (package! consult-todo
   :recipe (:host github

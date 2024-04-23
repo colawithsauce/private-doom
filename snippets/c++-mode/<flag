@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: set/wait flag
+# uuid:
+# key: <flag
+# condition: t
+# --
+$1_flag(PIPE_$2, PIPE_$3, EVENT_ID$4);$0
