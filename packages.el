@@ -58,28 +58,25 @@
 (package! disable-mouse
   :recipe (:host github :repo "purcell/disable-mouse"))
 
-(package! ccls
-  :disable t)
+;; (package! ccls :disable t)
 
 (package! gptel)
 
 ;; (package! xclip :disable t)
 
-;; (when (package! lsp-bridge
-;;         :recipe (:host github
-;;                  :repo "manateelazycat/lsp-bridge"
-;;                  :branch "master"
-;;                  :files ("*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
-;;                  ;; do not perform byte compilation or native compilation for lsp-bridge
-;;                  :build (:not compile)))
-
-;;   (package! eglot :disable t)
-
-;;   (unless (display-graphic-p)
-;;     (package! popon
-;;       :recipe (:host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
-;;     (package! acm-terminal
-;;       :recipe (:host github :repo "twlz0ne/acm-terminal"))))
+(when (package! lsp-bridge
+        :recipe (:host github
+                 :repo "manateelazycat/lsp-bridge"
+                 :branch "master"
+                 :files ("*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
+                 ;; do not perform byte compilation or native compilation for lsp-bridge
+                 :build (:not compile)))
+  (package! eglot :disable t)
+  (unless (display-graphic-p)
+    (package! popon
+      :recipe (:host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
+    (package! acm-terminal
+      :recipe (:host github :repo "twlz0ne/acm-terminal"))))
 
 (when (modulep! :tools lsp)
   (package! emacs-lsp-booster :recipe (:host github :repo "blahgeek/emacs-lsp-booster"))
@@ -119,6 +116,8 @@
 (package! consult-todo
   :recipe (:host github
            :repo "liuyinz/consult-todo"))
+
+(package! just-mode)
 
 (package! citre
   :recipe (:host github

@@ -22,23 +22,22 @@
 ;; accept. For example:
 ;;
 (setq
- my-font-size 22
- ;; doom-font (font-spec :family "CaskaydiaCove Nerd Font Mono" :size my-font-size :weight 'semilight)
- ;; doom-font (font-spec :family "SFMono Nerd Font Mono" :size my-font-size :weight 'medium)
- ;; doom-font (font-spec :family "IBM Plex Mono" :size my-font-size :weight 'medium)
+ my-font-size 24
  ;; doom-font (font-spec :family "RecursiveMnLnrSt Nerd Font" :size my-font-size :weight 'medium)
- doom-font (font-spec :family "0xProto Nerd Font Mono" :size my-font-size)
- ;; doom-font (font-spec :family "Sarasa Mono SC" :size my-font-size)
+ ;; doom-font (font-spec :family "0xProto Nerd Font Mono" :size my-font-size)
+ doom-font (font-spec :family "Maple Mono NF" :size my-font-size)
+ ;; doom-font (font-spec :family "CMUTypewriter Nerd Font Text" :size my-font-size)
+ ;; doom-font (font-spec :family "BigBlue_TerminalPlus Nerd Font Mono" :size my-font-size)
  ;; doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
  doom-variable-pitch-font (font-spec :family "Sarasa Gothic SC" :size my-font-size)
  doom-unicode-font (font-spec :family  "Joypixels" :size my-font-size))
 
 (defun my-cjk-font()
   (dolist (charset '(kana han cjk-misc symbol bopomofo))
-    (set-fontset-font t charset (font-spec :family "LXGW WenKai Mono"))
-    ;; (set-fontset-font t charset (font-spec :family "Jigmo"))
-    ;; (set-fontset-font t charset (font-spec :family "LXGW Neo XiHei Screen Full"))
-    ))
+    ;; (set-fontset-font t charset (font-spec :family "LXGW WenKai Mono"))
+    ;; (set-fontset-font t charset (font-spec :family "Noto Serif CJK SC"))
+    ;; (set-fontset-font t charset (font-spec :family "LXGW Neo ZhiSong"))
+    (set-fontset-font t charset (font-spec :family "LXGW WenKai Mono"))))
 
 (add-hook! 'after-setting-font-hook #'my-cjk-font)
 ;;
@@ -51,14 +50,16 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;; (setq doom-dark+-blue-modeline t)
-;; (setq catppuccin-flavor 'frappe) ;; or 'latte, 'frappe, 'macchiato, or 'mocha
+(setq catppuccin-flavor 'latte) ;; or 'latte, 'frappe, 'macchiato, or 'mocha
 ;; (setq doom-theme 'catppuccin)
 (with-eval-after-load 'doom-themes
   (doom-themes-treemacs-config))
 
-(setq vscode-dark-plus-box-org-todo nil)
-(setq doom-theme 'doom-dark+)
-;; (add-to-list 'default-frame-alist '(alpha-background . 89))
+(setq fancy-splash-image (expand-file-name "assets/Ubuntu.png" doom-user-dir))
+
+(setq vscode-dark-plus-box-org-todo nil) ;; for emacs 30
+(setq doom-theme 'doom-gruvbox)
+(add-to-list 'default-frame-alist '(alpha-background . 89))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -67,7 +68,6 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Org/")
-
 
 ;; (setq url-gateway-local-host-regexp
 ;;       (concat "\\`" (regexp-opt '("localhost" "127.0.0.1")) "\\'"))
@@ -123,6 +123,7 @@
 
 ;; Word wrap support!
 (setq word-wrap-by-category t)
+(setq warning-minimum-level :error)
 
 (use-package gptel
   :config
@@ -135,6 +136,8 @@
                     "moonshot-v1-32k"
                     "moonshot-v1-128k")
           :host "api.moonshot.cn")))
+(with-eval-after-load 'corfu
+  (setq tab-always-indent t))
 
 (use-package! csv-mode
   :init (require 'csv-mode))
@@ -143,9 +146,9 @@
     (setq browse-url-browser-function 'browse-url-chrome)
   (setq browse-url-browser-function 'browse-url-firefox))
 
-(add-hook! 'doom-first-input-hook
-  (setq evil-insert-state-cursor 'bar))
-(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+;; (add-hook! 'doom-first-input-hook
+;;   (setq evil-insert-state-cursor 'bar))
+;; (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 (use-package dabbrev
   :custom (dabbrev-abbrev-char-regexp "[A-Za-z-_]"))
@@ -363,8 +366,6 @@
     :custom
     (citre-ctags-program "/usr/bin/ctags")
     (citre-readtags-program "/usr/bin/readtags")
-    ;; (citre-gtags-program "/usr/bin/gtags")
-    ;; (citre-global-program "/usr/bin/global")
     (citre-default-create-tags-file-location 'global-cache)
 
     :init
@@ -397,57 +398,56 @@
   (setq-default doom-localleader-alt-key "M-SPC m"))
 
 ;; Tabnine
-(use-package! company-tabnine
-  :when (modulep! :completion company)
-  :config
-  (after! company
-    (setq company-tooltip-minimum-width 100)
-    (setq company-tooltip-maximum-width 100)
-    (setq company-show-numbers t)
-    (setq company-idle-delay 0.025))
-  (set-company-backend! 'prog-mode
-    '(company-capf :separate company-tabnine company-yasnippet)))
+;; (use-package! company-tabnine
+;;   :when (modulep! :completion company)
+;;   :config
+;;   (after! company
+;;     (setq company-tooltip-minimum-width 100)
+;;     (setq company-tooltip-maximum-width 100)
+;;     (setq company-show-numbers t)
+;;     (setq company-idle-delay 0.025))
+;;   (set-company-backend! 'prog-mode
+;;     '(company-capf :separate company-tabnine company-yasnippet)))
 
 (when (modulep! :tools lsp +eglot)
   (use-package eglot-booster
     :after eglot
     :config (eglot-booster-mode)))
 
-;; (use-package! lsp-bridge
-;;   :config
-;;   (setq lsp-bridge-enable-log nil)
-;;   (global-lsp-bridge-mode)
+(use-package! lsp-bridge
+  :config
+  (setq lsp-bridge-enable-log nil)
+  (global-lsp-bridge-mode)
 
-;;   (setq acm-enable-citre t)
-;;   (setq acm-enable-yas nil)
-;;   (setq acm-enable-codeium t)
-;;   (setq acm-enable-search-file-words nil)
-;;   (setq acm-enable-tabnine nil)
-;;   (setq lsp-bridge-python-command "python3")
-;;   (setq lsp-bridge-enable-inlay-hint t)
-;;   (setq lsp-bridge-enable-mode-line nil)
+  (setq acm-enable-citre nil
+   acm-enable-yas nil
+   acm-enable-codeium nil
+   acm-enable-search-file-words nil
+   acm-enable-tabnine t
+   lsp-bridge-python-command "pypy3"
+   lsp-bridge-c-lsp-server "ccls"
+   lsp-bridge-enable-org-babel t
+   lsp-bridge-enable-inlay-hint t
+   lsp-bridge-enable-mode-line nil)
 
-;;   (unless (display-graphic-p)
-;;     (with-eval-after-load 'acm
-;;       (require 'acm-terminal)))
+  (with-eval-after-load 'acm
+      (require 'acm-terminal))
 
-;;   ;; disable lsp support on doom emacs
-;;   (when (featurep! :tools lsp)
-;;     (advice-add #'eglot-ensure :override (lambda () t)))
+  (advice-add #'eglot-ensure :override #'ignore)
 
-;;   (map! :map lsp-bridge-mode-map :leader "ca" #'lsp-bridge-code-action)
-;;   (map! :map lsp-bridge-mode-map :leader "cx" #'lsp-bridge-diagnostic-list)
-;;   (add-to-list 'evil-emacs-state-modes 'lsp-bridge-ref-mode)
+  (map! :map lsp-bridge-mode-map :leader "ca" #'lsp-bridge-code-action)
+  (map! :map lsp-bridge-mode-map :leader "cx" #'lsp-bridge-diagnostic-list)
+  (add-to-list 'evil-emacs-state-modes 'lsp-bridge-ref-mode)
 
-;;   (set-lookup-handlers!
-;;     'lsp-bridge-mode
-;;     :definition #'lsp-bridge-find-def
-;;     :implementations #'lsp-bridge-find-impl
-;;     :type-definition #'lsp-bridge-find-type-def
-;;     :references #'lsp-bridge-find-type-def
-;;     :documentation #'lsp-bridge-show-documentation
-;;     :file nil
-;;     :async t))
+  (set-lookup-handlers!
+    'lsp-bridge-mode
+    :definition #'lsp-bridge-find-def
+    :implementations #'lsp-bridge-find-impl
+    :type-definition #'lsp-bridge-find-type-def
+    :references #'lsp-bridge-find-type-def
+    :documentation #'lsp-bridge-show-documentation
+    :file nil
+    :async nil))
 
 (defun +display-vga-p ()
   (not (char-displayable-p ?里)))

@@ -21,8 +21,8 @@
        ;;layout            ; auie,ctsrnm is the superior home row
 
        :completion
-       ;; (company +childframe)           ; the ultimate code completion backend
-       (corfu +orderless +icons -dabbrev)  ; complete with cap(f), cape and a flying feather!
+       ;; (company -childframe)           ; the ultimate code completion backend
+       ;; (corfu +orderless +icons -dabbrev)  ; complete with cap(f), cape and a flying feather!
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
        ;;ivy               ; a search engine for love and life
@@ -49,7 +49,7 @@
        (treemacs lsp)          ; a project drawer, like neotree but cooler
        ;; unicode           ; extended unicode support for various languages
        (vc-gutter -pretty
-                  +diff-hl) ; vcs diff in the fringe
+                  -diff-hl) ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        ;;window-select     ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
@@ -83,7 +83,7 @@
        vterm             ; the best terminal emulation in Emacs
 
        :checkers
-       (syntax +flymake)              ; tasing you for every semicolon you forget
+       ;; (syntax -flymake)              ; tasing you for every semicolon you forget
        ;; (spell -flyspell
        ;;        +hunspell) ; tasing you for misspelling mispelling
        ;;grammar           ; tasing grammar mistake every you make
@@ -188,7 +188,7 @@
              +tree-sitter)       ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        ;;scala             ; java, but good
        ;;(scheme +guile)   ; a fully conniving family of lisps
-       (sh +lsp)                ; she sells {ba,z,fi}sh shells on the C xor
+       (sh +tree-sitter)                ; she sells {ba,z,fi}sh shells on the C xor
        ;;sml
        ;;solidity          ; do you need a blockchain? No.
        ;;swift             ; who asked for emoji variables?
