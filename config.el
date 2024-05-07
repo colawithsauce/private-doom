@@ -398,56 +398,56 @@
   (setq-default doom-localleader-alt-key "M-SPC m"))
 
 ;; Tabnine
-;; (use-package! company-tabnine
-;;   :when (modulep! :completion company)
-;;   :config
-;;   (after! company
-;;     (setq company-tooltip-minimum-width 100)
-;;     (setq company-tooltip-maximum-width 100)
-;;     (setq company-show-numbers t)
-;;     (setq company-idle-delay 0.025))
-;;   (set-company-backend! 'prog-mode
-;;     '(company-capf :separate company-tabnine company-yasnippet)))
+(use-package! company-tabnine
+  :when (modulep! :completion company)
+  :config
+  (after! company
+    (setq company-tooltip-minimum-width 100)
+    (setq company-tooltip-maximum-width 100)
+    (setq company-show-numbers t)
+    (setq company-idle-delay 0.025))
+  (set-company-backend! 'prog-mode
+    '(company-capf :separate company-tabnine company-yasnippet)))
 
 (when (modulep! :tools lsp +eglot)
   (use-package eglot-booster
     :after eglot
     :config (eglot-booster-mode)))
 
-(use-package! lsp-bridge
-  :config
-  (setq lsp-bridge-enable-log nil)
-  (global-lsp-bridge-mode)
+;; (use-package! lsp-bridge
+;;   :config
+;;   (setq lsp-bridge-enable-log nil)
+;;   (global-lsp-bridge-mode)
 
-  (setq acm-enable-citre nil
-   acm-enable-yas nil
-   acm-enable-codeium nil
-   acm-enable-search-file-words nil
-   acm-enable-tabnine t
-   lsp-bridge-python-command "pypy3"
-   lsp-bridge-c-lsp-server "ccls"
-   lsp-bridge-enable-org-babel t
-   lsp-bridge-enable-inlay-hint t
-   lsp-bridge-enable-mode-line nil)
+;;   (setq acm-enable-citre nil
+;;    acm-enable-yas nil
+;;    acm-enable-codeium nil
+;;    acm-enable-search-file-words nil
+;;    acm-enable-tabnine t
+;;    lsp-bridge-python-command "pypy3"
+;;    lsp-bridge-c-lsp-server "ccls"
+;;    lsp-bridge-enable-org-babel t
+;;    lsp-bridge-enable-inlay-hint t
+;;    lsp-bridge-enable-mode-line nil)
 
-  (with-eval-after-load 'acm
-      (require 'acm-terminal))
+;;   (with-eval-after-load 'acm
+;;       (require 'acm-terminal))
 
-  (advice-add #'eglot-ensure :override #'ignore)
+;;   (advice-add #'eglot-ensure :override #'ignore)
 
-  (map! :map lsp-bridge-mode-map :leader "ca" #'lsp-bridge-code-action)
-  (map! :map lsp-bridge-mode-map :leader "cx" #'lsp-bridge-diagnostic-list)
-  (add-to-list 'evil-emacs-state-modes 'lsp-bridge-ref-mode)
+;;   (map! :map lsp-bridge-mode-map :leader "ca" #'lsp-bridge-code-action)
+;;   (map! :map lsp-bridge-mode-map :leader "cx" #'lsp-bridge-diagnostic-list)
+;;   (add-to-list 'evil-emacs-state-modes 'lsp-bridge-ref-mode)
 
-  (set-lookup-handlers!
-    'lsp-bridge-mode
-    :definition #'lsp-bridge-find-def
-    :implementations #'lsp-bridge-find-impl
-    :type-definition #'lsp-bridge-find-type-def
-    :references #'lsp-bridge-find-type-def
-    :documentation #'lsp-bridge-show-documentation
-    :file nil
-    :async nil))
+;;   (set-lookup-handlers!
+;;     'lsp-bridge-mode
+;;     :definition #'lsp-bridge-find-def
+;;     :implementations #'lsp-bridge-find-impl
+;;     :type-definition #'lsp-bridge-find-type-def
+;;     :references #'lsp-bridge-find-type-def
+;;     :documentation #'lsp-bridge-show-documentation
+;;     :file nil
+;;     :async nil))
 
 (defun +display-vga-p ()
   (not (char-displayable-p ?里)))
