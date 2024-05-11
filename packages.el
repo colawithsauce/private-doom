@@ -116,6 +116,7 @@
 (package! consult-todo
   :recipe (:host github
            :repo "liuyinz/consult-todo"))
+(package! todoist)
 
 (package! just-mode)
 

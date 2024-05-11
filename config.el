@@ -69,6 +69,8 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Org/")
 
+(setq todoist-token (shell-command-to-string "pass Todoist/API | tr -d \\\\n"))
+
 ;; (setq url-gateway-local-host-regexp
 ;;       (concat "\\`" (regexp-opt '("localhost" "127.0.0.1")) "\\'"))
 ;; (setq url-proxy-services
@@ -398,16 +400,16 @@
   (setq-default doom-localleader-alt-key "M-SPC m"))
 
 ;; Tabnine
-(use-package! company-tabnine
-  :when (modulep! :completion company)
-  :config
-  (after! company
-    (setq company-tooltip-minimum-width 100)
-    (setq company-tooltip-maximum-width 100)
-    (setq company-show-numbers t)
-    (setq company-idle-delay 0.025))
-  (set-company-backend! 'prog-mode
-    '(company-capf :separate company-tabnine company-yasnippet)))
+;; (use-package! company-tabnine
+;;   :when (modulep! :completion company)
+;;   :config
+;;   (after! company
+;;     (setq company-tooltip-minimum-width 100)
+;;     (setq company-tooltip-maximum-width 100)
+;;     (setq company-show-numbers t)
+;;     (setq company-idle-delay 0.025))
+;;   (set-company-backend! 'prog-mode
+;;     '(company-capf :separate company-tabnine company-yasnippet)))
 
 (when (modulep! :tools lsp +eglot)
   (use-package eglot-booster
