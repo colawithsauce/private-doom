@@ -24,8 +24,8 @@
 (setq
  my-font-size 24
  ;; doom-font (font-spec :family "RecursiveMnLnrSt Nerd Font" :size my-font-size :weight 'medium)
- ;; doom-font (font-spec :family "0xProto Nerd Font Mono" :size my-font-size)
- doom-font (font-spec :family "Maple Mono NF" :size my-font-size)
+ doom-font (font-spec :family "0xProto Nerd Font Mono" :size my-font-size)
+ ;; doom-font (font-spec :family "Maple Mono NF" :size my-font-size)
  ;; doom-font (font-spec :family "CMUTypewriter Nerd Font Text" :size my-font-size)
  ;; doom-font (font-spec :family "BigBlue_TerminalPlus Nerd Font Mono" :size my-font-size)
  ;; doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
@@ -73,8 +73,8 @@
 (use-package! todoist
   :commands (todoist)
   :config
-  (map! :desc "Open todoist" :nvie "<f8>" #'todoist)
-  (map! :mode 'todoist-mode :desc "Close todoist" :nvie "<f8>" #'evil-delete-buffer))
+  (map! :desc "Open todoist" :nvie "<f9>" #'todoist)
+  (map! :mode 'todoist-mode :desc "Close todoist" :nvie "<f9>" #'evil-delete-buffer))
 
 ;; (setq url-gateway-local-host-regexp
 ;;       (concat "\\`" (regexp-opt '("localhost" "127.0.0.1")) "\\'"))
