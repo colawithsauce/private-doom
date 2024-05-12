@@ -118,6 +118,14 @@
            :repo "liuyinz/consult-todo"))
 (package! todoist)
 
+(package! ts)
+(package! esxml)
+(package! unpackaged
+  :recipe (:host github
+           :repo "alphapapa/unpackaged.el"))
+(package! emacs-lorem-ipsum
+  :recipe (:host github :repo "jschaf/emacs-lorem-ipsum"))
+
 (package! just-mode)
 
 (package! citre
