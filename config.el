@@ -59,7 +59,7 @@
 
 (setq vscode-dark-plus-box-org-todo nil) ;; for emacs 30
 (setq doom-theme 'doom-gruvbox)
-(add-to-list 'default-frame-alist '(alpha-background . 89))
+;; (add-to-list 'default-frame-alist '(alpha-background . 89))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -70,6 +70,11 @@
 (setq org-directory "~/Org/")
 
 (setq todoist-token (shell-command-to-string "pass Todoist/API | tr -d \\\\n"))
+(use-package! todoist
+  :commands (todoist)
+  :config
+  (map! :desc "Open todoist" :nvie "<f8>" #'todoist)
+  (map! :mode 'todoist-mode :desc "Close todoist" :nvie "<f8>" #'evil-delete-buffer))
 
 ;; (setq url-gateway-local-host-regexp
 ;;       (concat "\\`" (regexp-opt '("localhost" "127.0.0.1")) "\\'"))
