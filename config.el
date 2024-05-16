@@ -37,7 +37,7 @@
     ;; (set-fontset-font t charset (font-spec :family "LXGW WenKai Mono"))
     ;; (set-fontset-font t charset (font-spec :family "Noto Serif CJK SC"))
     ;; (set-fontset-font t charset (font-spec :family "LXGW Neo ZhiSong"))
-    (set-fontset-font t charset (font-spec :family "LXGW WenKai Mono"))))
+    (set-fontset-font t charset (font-spec :family "LXGW Neo ZhiSong"))))
 
 (add-hook! 'after-setting-font-hook #'my-cjk-font)
 ;;
@@ -58,7 +58,7 @@
 (setq fancy-splash-image (expand-file-name "assets/Ubuntu.png" doom-user-dir))
 
 (setq vscode-dark-plus-box-org-todo nil) ;; for emacs 30
-(setq doom-theme 'doom-gruvbox)
+(setq doom-theme 'modus-vivendi)
 ;; (add-to-list 'default-frame-alist '(alpha-background . 89))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -69,10 +69,10 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Org/")
 
-(setq todoist-token (shell-command-to-string "pass Todoist/API | tr -d \\\\n"))
 (use-package! todoist
   :commands (todoist)
-  :config
+  :config (setq todoist-token (shell-command-to-string "pass Todoist/API | tr -d \\\\n"))
+  :init
   (map! :desc "Open todoist" :nvie "<f9>" #'todoist)
   (map! :mode 'todoist-mode :desc "Close todoist" :nvie "<f9>" #'evil-delete-buffer))
 
@@ -666,7 +666,7 @@
       (list front back))))
 
 ;; load all my private configurations
-(add-hook! 'doom-first-input-hook
+(add-hook! 'doom-first-file-hook
   (when-let ((private-lisp-directory (file-exists-p! (file-name-concat doom-user-dir "private-lisp"))))
     (dolist (file (directory-files private-lisp-directory 'full (rx ".el" eos)))
       (load file))))
