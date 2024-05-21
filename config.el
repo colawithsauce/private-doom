@@ -58,7 +58,7 @@
 (setq fancy-splash-image (expand-file-name "assets/Ubuntu.png" doom-user-dir))
 
 (setq vscode-dark-plus-box-org-todo nil) ;; for emacs 30
-(setq doom-theme 'modus-vivendi)
+(setq doom-theme 'ef-summer)
 ;; (add-to-list 'default-frame-alist '(alpha-background . 89))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -158,13 +158,21 @@
 ;; (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 (use-package dabbrev
-  :custom (dabbrev-abbrev-char-regexp "[A-Za-z-_]"))
+  :custom (dabbrev-abbrev-char-regexp "[A-Za-z-_:]"))
 
 (after! treemacs
   (evil-set-command-properties #'treemacs-RET-action :jump t)
   (evil-set-command-properties #'treemacs-visit-node-default :jump t))
 
 (after! org
+  (use-package org-excalidraw
+    :commands
+    (org-excalidraw-create-drawing)
+    :custom
+    (org-excalidraw-directory "~/Org/.excalidraw")
+    :init
+    (org-excalidraw-initialize))
+
   (use-package org-protocol
     :config
     (add-to-list 'org-protocol-protocol-alist
@@ -243,6 +251,9 @@
         '(("d" "default" plain "%?" :target
            (file+head "${slug}.org" "#+title: ${title}\n")
            :unnarrowed t)))
+
+  (map! :desc "prev daily note" :nvie "<f10>" #'org-roam-dailies-goto-previous-note)
+  (map! :desc "next daily note" :nvie "<f11>" #'org-roam-dailies-goto-next-note)
 
   ;; Discard backlinks from dailies
   (defun my/org-roam-show-backlink-p (backlink)

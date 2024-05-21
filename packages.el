@@ -53,6 +53,7 @@
 ;; (package! nov)
 (package! vscode-dark-plus-theme)
 (unpin! doom-themes)
+(package! ef-themes)
 
 ;; (package! org-mind-map)
 (package! disable-mouse
@@ -117,6 +118,9 @@
   :recipe (:host github
            :repo "liuyinz/consult-todo"))
 (package! todoist)
+(package! org-excalidraw
+  :recipe (:host github
+                 :repo "wdavew/org-excalidraw"))
 
 (package! ts)
 (package! esxml)
