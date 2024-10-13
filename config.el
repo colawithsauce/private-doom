@@ -22,22 +22,25 @@
 ;; accept. For example:
 ;;
 (setq
- my-font-size 24
+ my-font-size 28
  ;; doom-font (font-spec :family "RecursiveMnLnrSt Nerd Font" :size my-font-size :weight 'medium)
- doom-font (font-spec :family "0xProto Nerd Font Mono" :size my-font-size)
+ ;; doom-font (font-spec :family "0xProto Nerd Font Mono" :size my-font-size)
+ doom-font (font-spec :family "MonoLisa Nerd Font" :size my-font-size)
+ ;; doom-font (font-spec :family "CommitMono" :size my-font-size)
  ;; doom-font (font-spec :family "Maple Mono NF" :size my-font-size)
  ;; doom-font (font-spec :family "CMUTypewriter Nerd Font Text" :size my-font-size)
  ;; doom-font (font-spec :family "BigBlue_TerminalPlus Nerd Font Mono" :size my-font-size)
  ;; doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
- doom-variable-pitch-font (font-spec :family "Sarasa Gothic SC" :size my-font-size)
- doom-unicode-font (font-spec :family  "Joypixels" :size my-font-size))
+ doom-unicode-font (font-spec :family  "Noto Color Emoji" :size my-font-size)
+ doom-variable-pitch-font (font-spec :family "Sarasa Gothic SC" :size my-font-size))
 
 (defun my-cjk-font()
   (dolist (charset '(kana han cjk-misc symbol bopomofo))
     ;; (set-fontset-font t charset (font-spec :family "LXGW WenKai Mono"))
     ;; (set-fontset-font t charset (font-spec :family "Noto Serif CJK SC"))
     ;; (set-fontset-font t charset (font-spec :family "LXGW Neo ZhiSong"))
-    (set-fontset-font t charset (font-spec :family "LXGW Neo ZhiSong"))))
+    (set-fontset-font t charset (font-spec :family "LXGW Neo ZhiSong")))
+  (set-fontset-font t '(#xF0000 . #xF1000) (font-spec :family "98WB-0")))
 
 (add-hook! 'after-setting-font-hook #'my-cjk-font)
 ;;
@@ -50,20 +53,20 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;; (setq doom-dark+-blue-modeline t)
-(setq catppuccin-flavor 'latte) ;; or 'latte, 'frappe, 'macchiato, or 'mocha
+;; (setq catppuccin-flavor 'latte) ;; or 'latte, 'frappe, 'macchiato, or 'mocha
 ;; (setq doom-theme 'catppuccin)
-(with-eval-after-load 'doom-themes
-  (doom-themes-treemacs-config))
+;; (with-eval-after-load 'doom-themes
+;;   (doom-themes-treemacs-config))
 
 (setq fancy-splash-image (expand-file-name "assets/Ubuntu.png" doom-user-dir))
 
 (setq vscode-dark-plus-box-org-todo nil) ;; for emacs 30
-(setq doom-theme 'ef-summer)
+(setq doom-theme 'sanityinc-tomorrow-bright)
 ;; (add-to-list 'default-frame-alist '(alpha-background . 89))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type 'relative)
+(setq display-line-numbers-type nil);; 'relative)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -129,20 +132,62 @@
 ;;         company-show-quick-access t))
 
 ;; Word wrap support!
+(ignore-errors (require 'lsp-bridge))
+
 (setq word-wrap-by-category t)
 (setq warning-minimum-level :error)
+(setq-default tab-width 4)
+
+(after! tramp
+  (setq-default explicit-shell-file-name "/bin/bash")
+  (setq-default shell-file-name "/bin/bash")
+  (setq-default tramp-default-remote-shell "/bin/bash")
+  (setq enable-remote-dir-locals t))
+
+(use-package! exec-path-from-shell
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
 
 (use-package gptel
   :config
-  (setq gptel-model "moonshot-v1-8k")
-  (setq gptel-default-mode 'org-mode)
-  (setq gptel-backend
-        (gptel-make-openai "Moonshot"
+  (setq gptel-model "deepseek-coder"
+        gptel-default-mode 'org-mode
+        gptel-use-curl t
+        gptel-backend
+        (gptel-make-openai "DeepSeek"
+          :stream t
           :key 'gptel-api-key
-          :models '("moonshot-v1-8k"
-                    "moonshot-v1-32k"
-                    "moonshot-v1-128k")
-          :host "api.moonshot.cn")))
+          :models '("deepseek-chat"
+                    "deepseek-coder")
+          :host "api.deepseek.com"))
+
+  ;; (setq gptel-model "o1-mini"
+  ;;       gptel-default-mode 'org-mode
+  ;;       gptel-use-curl t
+  ;;       gptel-backend
+  ;;       (gptel-make-openai "OpenAI"
+  ;;         :stream t
+  ;;         :key 'gptel-api-key
+  ;;         :models '("gpt-4o-mini-2024-07-18"
+  ;;                   "gpt-4o-mini"
+  ;;                   "o1-mini"
+  ;;                   "gpt-4o-2024-08-06")
+  ;;         :host "api.gptsapi.net"))
+
+  ;; (setq gptel-model "claude-3-5-sonnet-20240620"
+  ;;       gptel-default-mode 'org-mode
+  ;;       gptel-use-curl nil
+  ;;       gptel-backend
+  ;;       (gptel-make-anthropic "Claude"
+  ;;         :stream t
+  ;;         :key 'gptel-api-key
+  ;;         :host "api.gptsapi.net"
+  ;;         ;; :header '(("Content-Type" . "application/json"))
+  ;;         ;; :endpoint "/v1/chat/completions/"
+  ;;         ))
+  )
+
 (with-eval-after-load 'corfu
   (setq tab-always-indent t))
 
@@ -160,18 +205,49 @@
 (use-package dabbrev
   :custom (dabbrev-abbrev-char-regexp "[A-Za-z-_:]"))
 
+(use-package company
+  :custom (company-dabbrev-char-regexp "[A-Za-z-_:]"))
+
 (after! treemacs
   (evil-set-command-properties #'treemacs-RET-action :jump t)
   (evil-set-command-properties #'treemacs-visit-node-default :jump t))
 
 (after! org
-  (use-package org-excalidraw
-    :commands
-    (org-excalidraw-create-drawing)
+  ;; (use-package org-excalidraw
+  ;;   :commands
+  ;;   (org-excalidraw-create-drawing)
+  ;;   :custom
+  ;;   (org-excalidraw-directory "~/Org/.excalidraw")
+  ;;   :init
+  ;;   (org-excalidraw-initialize))
+  ;; (use-package toc-org
+  ;;   :hook ((org-mode-hook markdown-mode-hook) . toc-org-mode)
+  ;;   ;; :config
+  ;;   ;; (define-key 'markdown-mode-map (kbd "\C-c\C-o") 'toc-org-markdown-follow-thing-at-point)
+  ;;   )
+  (require 'org-yt)
+  (use-package! org-remoteimg
     :custom
-    (org-excalidraw-directory "~/Org/.excalidraw")
-    :init
-    (org-excalidraw-initialize))
+    (url-automatic-caching t)
+    (url-cache-directory (concat user-emacs-directory "url_cache"))
+    (org-display-remote-inline-images 'cache))
+
+  (use-package! org-download
+      :config
+      (setenv "XDG_SESSION_TYPE" "wayland")
+      (after! org-download
+      ;;; 修复 WSL 下粘贴剪贴板中的图片错误
+        (defun org-download-clipboard (&optional basename)
+          "Capture the image from the clipboard and insert the resulting file."
+          (interactive)
+          (let ((org-download-screenshot-method
+                 (if (executable-find "wl-paste")
+                     "wl-paste -t image/bmp | convert bmp:- %s"
+                   (user-error
+                    "Please install the \"wl-paste\" program included in wl-clipboard"))))
+            (org-download-screenshot basename))))
+      :custom
+      (org-download-screenshot-method "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\""))
 
   (use-package org-protocol
     :config
@@ -243,7 +319,11 @@
       :desc "Slurp sexp" :n ">" #'sp-slurp-hybrid-sexp)
 (use-package vterm
   :commands #'vterm
-  :custom (vterm-shell "/usr/bin/env fish"))
+  :custom
+  (vterm-shell "/usr/bin/bash")
+  (vterm-tramp-shells '(("docker" "/bin/bash")
+                        ("sshx" "/bin/bash")
+                        ("ssh" "/bin/bash"))))
 
 (after! org-roam
   ;; Setting default filename of new roam node.
@@ -331,30 +411,35 @@
       (setf (alist-get 'c++-mode c-default-style) "cc"))))
 
 ;; Tramp
-(after! tramp
-  (use-package tramp-container
-    :commands (find-file))
-  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
-  (setq enable-remote-dir-locals t))
+(use-package tramp-container
+  :commands (find-file))
 
 ;; UI
 (unless (featurep 'lsp-bridge)
   (if (modulep! :tools lsp +eglot)
       ;; eglot was enable
       (after! eglot
-        (add-to-list 'eglot-server-programs
-                     '((c-mode c++-mode)
-                       . ("clangd"
-                          "-j=8"
-                          "--log=error"
-                          "--malloc-trim"
-                          "--background-index"
-                          "--clang-tidy"
-                          "--cross-file-rename"
-                          "--completion-style=detailed"
-                          "--pch-storage=memory"
-                          ;; "--header-insertion=never"
-                          "--header-insertion-decorators=0")))
+        (dolist (server-config
+                 '(((c-mode c++-mode)
+                    . ("clangd"
+                       "-j=8"
+                       "--log=error"
+                       "--malloc-trim"
+                       "--background-index"
+                       "--clang-tidy"
+                       "--cross-file-rename"
+                       "--completion-style=detailed"
+                       "--pch-storage=memory"
+                       ;; "--header-insertion=never"
+                       "--header-insertion-decorators=0"))
+                   (mlir-mode . ("mlir-lsp-server" "--color"))
+                   (tablegen-mode . ("tblgen-lsp-server" "--color"))
+                   ((rust-mode rust-ts-mode rustic-mode)
+                     . ("rust-analyzer" :initializationOptions
+                        (:cargo (:allFeatures t :allTargets t :features "full")
+                         :checkOnSave :json-false
+                         :diagnostics (:enable :json-false))))))
+          (add-to-list 'eglot-server-programs server-config))
         (use-package! breadcrumb
           :config
           (add-hook! 'eglot-managed-mode-hook #'breadcrumb-local-mode)))
@@ -363,8 +448,16 @@
       (setq +format-with-lsp t)
 
       (with-eval-after-load 'lsp-clangd
-        (setq lsp-clients-clangd-executable (shell-command-to-string "which clangd | tr -d '\n'"))
+        ;; (setq lsp-clients-clangd-executable (shell-command-to-string "which clangd | tr -d '\n'"))
         (add-to-list 'lsp-clients-clangd-args "--header-insertion=never"))
+
+      (lsp-register-client
+       (make-lsp-client :new-connection (lsp-tramp-connection "clangd")
+                        :major-modes '(c-mode c++-mode)
+                        :remote? t
+                        :server-id 'clangd-remote))
+      (lsp-mlir-setup)
+      (lsp-tblgen-setup)
 
       (add-hook 'lsp-mode-hook #'lsp-headerline-breadcrumb-mode)
 
@@ -427,45 +520,47 @@
 ;;   (set-company-backend! 'prog-mode
 ;;     '(company-capf :separate company-tabnine company-yasnippet)))
 
-(when (modulep! :tools lsp +eglot)
+(when (and (modulep! :tools lsp +eglot)
+           (not (featurep 'lsp-bridge)))
   (use-package eglot-booster
     :after eglot
     :config (eglot-booster-mode)))
 
-;; (use-package! lsp-bridge
-;;   :config
-;;   (setq lsp-bridge-enable-log nil)
-;;   (global-lsp-bridge-mode)
+(when (featurep 'lsp-bridge)
+  (use-package! lsp-bridge
+    :config
+    (setq lsp-bridge-enable-log nil)
+    (global-lsp-bridge-mode)
 
-;;   (setq acm-enable-citre nil
-;;    acm-enable-yas nil
-;;    acm-enable-codeium nil
-;;    acm-enable-search-file-words nil
-;;    acm-enable-tabnine t
-;;    lsp-bridge-python-command "pypy3"
-;;    lsp-bridge-c-lsp-server "ccls"
-;;    lsp-bridge-enable-org-babel t
-;;    lsp-bridge-enable-inlay-hint t
-;;    lsp-bridge-enable-mode-line nil)
+    (setq acm-enable-citre nil
+          acm-enable-yas nil
+          acm-enable-codeium nil
+          acm-enable-search-file-words nil
+          acm-enable-tabnine nil
+          lsp-bridge-enable-with-tramp nil
+          lsp-bridge-python-command "pypy3"
+          ;; lsp-bridge-c-lsp-server "ccls"
+          lsp-bridge-enable-org-babel t
+          lsp-bridge-enable-inlay-hint t
+          lsp-bridge-enable-mode-line nil)
 
-;;   (with-eval-after-load 'acm
-;;       (require 'acm-terminal))
+    (with-eval-after-load 'acm (require 'acm-terminal))
 
-;;   (advice-add #'eglot-ensure :override #'ignore)
+    (advice-add #'eglot-ensure :override #'ignore)
 
-;;   (map! :map lsp-bridge-mode-map :leader "ca" #'lsp-bridge-code-action)
-;;   (map! :map lsp-bridge-mode-map :leader "cx" #'lsp-bridge-diagnostic-list)
-;;   (add-to-list 'evil-emacs-state-modes 'lsp-bridge-ref-mode)
+    (map! :map lsp-bridge-mode-map :leader "ca" #'lsp-bridge-code-action)
+    (map! :map lsp-bridge-mode-map :leader "cx" #'lsp-bridge-diagnostic-list)
+    (add-to-list 'evil-emacs-state-modes 'lsp-bridge-ref-mode)
 
-;;   (set-lookup-handlers!
-;;     'lsp-bridge-mode
-;;     :definition #'lsp-bridge-find-def
-;;     :implementations #'lsp-bridge-find-impl
-;;     :type-definition #'lsp-bridge-find-type-def
-;;     :references #'lsp-bridge-find-type-def
-;;     :documentation #'lsp-bridge-show-documentation
-;;     :file nil
-;;     :async nil))
+    (set-lookup-handlers!
+      'lsp-bridge-mode
+      :definition #'lsp-bridge-find-def
+      :implementations #'lsp-bridge-find-impl
+      :type-definition #'lsp-bridge-find-type-def
+      :references #'lsp-bridge-find-type-def
+      :documentation #'lsp-bridge-show-documentation
+      :file nil
+      :async nil)))
 
 (defun +display-vga-p ()
   (not (char-displayable-p ?里)))
@@ -551,14 +646,17 @@
 (use-package! leetcode
   :commands 'leetcode
   :config
-  (setq leetcode-prefer-language "cpp")
+  (setq leetcode-prefer-language "rust")
   (setq leetcode-save-solutions t)
-  (setq leetcode-directory "~/Projects/Leetcode"))
+  (setq leetcode-directory "~/.leetcode"))
+
+(with-eval-after-load 'rustic
+  (setq rustic-babel-default-toolchain "nightly"))
 
 (use-package! consult-todo
   :commands 'consult-todo
-  :config
-  (map! :leader :desc "Query todos" :nie"s q" #'consult-todo))
+  :init
+  (map! :leader :desc "Query todos" :nie"s /" #'consult-todo))
 
 (use-package! fanyi
   :commands (fanyi-dwim2 fanyi-dwim)
@@ -593,39 +691,39 @@
 ;;               evil-visual-state-map
 ;;               evil-insert-state-map)))
 
-;; From https://unix.stackexchange.com/a/681480 to specify if on wayland or on xorg
-(defun my/tty-clipboard-configure ()
-  (use-package xclip
-    :disabled t
-    :config
-    (xclip-mode -1))
+;; ;; From https://unix.stackexchange.com/a/681480 to specify if on wayland or on xorg
+;; (defun my/tty-clipboard-configure ()
+;;   (use-package xclip
+;;     :disabled t
+;;     :config
+;;     (xclip-mode -1))
 
-  ;; https://github.com/Crandel/home/blob/master/.config/emacs/recipes/base-rcp.el#L351)
-  (use-package select
-    :custom
-    (save-interprogram-paste-before-kill t)
-    (select-enable-clipboard             t)
-    (selection-coding-system             'utf-8)
-    :init
-    (setq-default wl-copy-process nil)
-    (when (string-prefix-p "wayland" (getenv "WAYLAND_DISPLAY"))
-      (defun wl-copy-handler (text)
-        (setq wl-copy-process (make-process :name "wl-copy"
-                                            :buffer nil
-                                            :command '("wl-copy" "-f" "-n")
-                                            :connection-type 'pipe))
-        (process-send-string wl-copy-process text)
-        (process-send-eof wl-copy-process))
-      (defun wl-paste-handler ()
-        (if (and wl-copy-process (process-live-p wl-copy-process))
-            nil ; should return nil if we're the current paste owner
-          (shell-command-to-string "wl-paste -n | tr -d '\r'")))
-      (setq interprogram-cut-function 'wl-copy-handler
-            interprogram-paste-function 'wl-paste-handler))))
+;;   ;; https://github.com/Crandel/home/blob/master/.config/emacs/recipes/base-rcp.el#L351)
+;;   (use-package select
+;;     :custom
+;;     (save-interprogram-paste-before-kill t)
+;;     (select-enable-clipboard             t)
+;;     (selection-coding-system             'utf-8)
+;;     :init
+;;     (setq-default wl-copy-process nil)
+;;     (when (string-prefix-p "wayland" (getenv "WAYLAND_DISPLAY"))
+;;       (defun wl-copy-handler (text)
+;;         (setq wl-copy-process (make-process :name "wl-copy"
+;;                                             :buffer nil
+;;                                             :command '("wl-copy" "-f" "-n")
+;;                                             :connection-type 'pipe))
+;;         (process-send-string wl-copy-process text)
+;;         (process-send-eof wl-copy-process))
+;;       (defun wl-paste-handler ()
+;;         (if (and wl-copy-process (process-live-p wl-copy-process))
+;;             nil ; should return nil if we're the current paste owner
+;;           (shell-command-to-string "wl-paste -n | tr -d '\r'")))
+;;       (setq interprogram-cut-function 'wl-copy-handler
+;;             interprogram-paste-function 'wl-paste-handler))))
 
-(if (daemonp)
-    (my/tty-clipboard-configure)
-  (add-hook! 'doom-first-file-hook #'my/tty-clipboard-configure))
+;; (if (daemonp)
+;;     (my/tty-clipboard-configure)
+;;   (add-hook! 'doom-first-file-hook #'my/tty-clipboard-configure))
 
 (use-package typst-ts-mode
   :init
@@ -681,6 +779,8 @@
   (when-let ((private-lisp-directory (file-exists-p! (file-name-concat doom-user-dir "private-lisp"))))
     (dolist (file (directory-files private-lisp-directory 'full (rx ".el" eos)))
       (load file))))
+
+(add-hook! 'tablegen-mode-hook #'smartparens-mode #'display-line-numbers-mode)
 
 ;; ;; This is an Emacs package that creates graphviz directed graphs from
 ;; ;; the headings of an org file

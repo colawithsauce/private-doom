@@ -54,6 +54,7 @@
 (package! vscode-dark-plus-theme)
 (unpin! doom-themes)
 (package! ef-themes)
+(package! color-theme-sanityinc-tomorrow)
 
 ;; (package! org-mind-map)
 (package! disable-mouse
@@ -62,6 +63,12 @@
 (package! ccls :disable t)
 
 (package! gptel)
+(package! toc-org)
+(package! csv-mode)
+(package! org-yt
+  :recipe (:host github :repo "TobiasZawada/org-yt"))
+(package! org-remoteimg
+  :recipe (:host github :repo "gaoDean/org-remoteimg"))
 
 ;; (package! xclip :disable t)
 
@@ -109,10 +116,12 @@
   :recipe (:host github
            :repo "kaiwk/leetcode.el"))
 
-;; (package! rime)
-;; (package! rime-regexp
-;;   :recipe (:host github
-;;            :repo "colawithsauce/rime-regexp.el"))
+(package! rime)
+(package! rime-regexp
+  :recipe (:host github
+           :repo "colawithsauce/rime-regexp.el"))
+
+(package! exec-path-from-shell)
 
 (package! consult-todo
   :recipe (:host github

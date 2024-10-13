@@ -21,7 +21,7 @@
        ;;layout            ; auie,ctsrnm is the superior home row
 
        :completion
-       ;; (company +childframe)           ; the ultimate code completion backend
+       ;; (company -childframe)           ; the ultimate code completion backend
        (corfu +orderless +icons -dabbrev)  ; complete with cap(f), cape and a flying feather!
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
@@ -94,7 +94,7 @@
        ;;debugger          ; FIXME stepping through code, to help you add bugs
        direnv
        (docker +lsp)
-       ;;editorconfig      ; let someone else argue about tabs vs spaces
+       editorconfig      ; let someone else argue about tabs vs spaces
        ;;ein               ; tame Jupyter notebooks with emacs
        (eval +overlay)     ; run code, run (also, repls)
        ;;gist              ; interacting with github gists
