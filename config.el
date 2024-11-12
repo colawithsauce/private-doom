@@ -22,10 +22,10 @@
 ;; accept. For example:
 ;;
 (setq
- my-font-size 28
+ my-font-size 26
  ;; doom-font (font-spec :family "RecursiveMnLnrSt Nerd Font" :size my-font-size :weight 'medium)
- ;; doom-font (font-spec :family "0xProto Nerd Font Mono" :size my-font-size)
- doom-font (font-spec :family "MonoLisa Nerd Font" :size my-font-size)
+ doom-font (font-spec :family "MonacoLigaturized Nerd Font Mono" :size my-font-size)
+ ;; doom-font (font-spec :family "MonoLisaNasy Nerd Font" :size my-font-size)
  ;; doom-font (font-spec :family "CommitMono" :size my-font-size)
  ;; doom-font (font-spec :family "Maple Mono NF" :size my-font-size)
  ;; doom-font (font-spec :family "CMUTypewriter Nerd Font Text" :size my-font-size)
@@ -61,12 +61,12 @@
 (setq fancy-splash-image (expand-file-name "assets/Ubuntu.png" doom-user-dir))
 
 (setq vscode-dark-plus-box-org-todo nil) ;; for emacs 30
-(setq doom-theme 'sanityinc-tomorrow-bright)
+(setq doom-theme 'modus-vivendi)
 ;; (add-to-list 'default-frame-alist '(alpha-background . 89))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type nil);; 'relative)
+(setq display-line-numbers-type t);; 'relative
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -139,10 +139,15 @@
 (setq-default tab-width 4)
 
 (after! tramp
-  (setq-default explicit-shell-file-name "/bin/bash")
-  (setq-default shell-file-name "/bin/bash")
-  (setq-default tramp-default-remote-shell "/bin/bash")
+  (setq-default explicit-shell-file-name "/bin/zsh")
+  (setq-default shell-file-name "/bin/zsh")
+  (setq-default tramp-default-remote-shell "/bin/zsh")
   (setq enable-remote-dir-locals t))
+
+(after! projectile
+  (setq projectile-git-use-fd t)
+  (setq projectile-fd-executable "fd")
+  (setq projectile-indexing-method 'alien))
 
 (use-package! exec-path-from-shell
   :config
@@ -413,6 +418,9 @@
 ;; Tramp
 (use-package tramp-container
   :commands (find-file))
+(use-package! apheleia
+  :custom
+  (apheleia-remote-algorithm 'remote))
 
 ;; UI
 (unless (featurep 'lsp-bridge)
@@ -526,6 +534,23 @@
     :after eglot
     :config (eglot-booster-mode)))
 
+;; accept completion from copilot and fallback to company
+(use-package! copilot
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . 'copilot-accept-completion)
+              ("TAB" . 'copilot-accept-completion)
+              ("C-TAB" . 'copilot-accept-completion-by-word)
+              ("C-<tab>" . 'copilot-accept-completion-by-word)
+              ("C-n" . 'copilot-next-completion)
+              ("C-p" . 'copilot-previous-completion))
+  :config
+  (add-to-list 'copilot-indentation-alist '(prog-mode 2))
+  (add-to-list 'copilot-indentation-alist '(org-mode 2))
+  (add-to-list 'copilot-indentation-alist '(text-mode 2))
+  (add-to-list 'copilot-indentation-alist '(closure-mode 2))
+  (add-to-list 'copilot-indentation-alist '(emacs-lisp-mode 2)))
+
 (when (featurep 'lsp-bridge)
   (use-package! lsp-bridge
     :config
@@ -537,6 +562,7 @@
           acm-enable-codeium nil
           acm-enable-search-file-words nil
           acm-enable-tabnine nil
+          acm-enable-copilot t
           lsp-bridge-enable-with-tramp nil
           lsp-bridge-python-command "pypy3"
           ;; lsp-bridge-c-lsp-server "ccls"
@@ -724,6 +750,11 @@
 ;; (if (daemonp)
 ;;     (my/tty-clipboard-configure)
 ;;   (add-hook! 'doom-first-file-hook #'my/tty-clipboard-configure))
+(use-package! tree-sitter
+  :config
+  (require 'tree-sitter-langs)
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 
 (use-package typst-ts-mode
   :init
@@ -741,6 +772,14 @@
     (add-to-list 'treesit-language-source-alist
                  '(typst "https://github.com/uben0/tree-sitter-typst"))
     (treesit-install-language-grammar 'typst)))
+
+(use-package cmake-ts-mode
+  :config
+  (add-hook 'cmake-ts-mode-hook
+    (defun setup-neocmakelsp ()
+      (require 'eglot)
+      (add-to-list 'eglot-server-programs `((cmake-ts-mode) . ("neocmakelsp" "--stdio")))
+      (eglot-ensure))))
 
 ;;; mail
 (setq smtpmail-smtp-server "smtp.qq.com" ;; <-- edit this !!!
@@ -777,10 +816,12 @@
 ;; load all my private configurations
 (add-hook! 'doom-first-file-hook
   (when-let ((private-lisp-directory (file-exists-p! (file-name-concat doom-user-dir "private-lisp"))))
-    (dolist (file (directory-files private-lisp-directory 'full (rx ".el" eos)))
-      (load file))))
+    (load (file-name-concat private-lisp-directory "init.el"))))
 
-(add-hook! 'tablegen-mode-hook #'smartparens-mode #'display-line-numbers-mode)
+(add-hook! 'tablegen-mode-hook
+           #'smartparens-mode #'display-line-numbers-mode
+           #'tree-sitter-hl-mode
+           #'font-lock-update)
 
 ;; ;; This is an Emacs package that creates graphviz directed graphs from
 ;; ;; the headings of an org file

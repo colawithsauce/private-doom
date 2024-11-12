@@ -69,6 +69,10 @@
   :recipe (:host github :repo "TobiasZawada/org-yt"))
 (package! org-remoteimg
   :recipe (:host github :repo "gaoDean/org-remoteimg"))
+(package! copilot)
+
+(package! tree-sitter)
+(package! tree-sitter-langs)
 
 ;; (package! xclip :disable t)
 
