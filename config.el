@@ -562,9 +562,6 @@
                         :major-modes '(c-mode c++-mode)
                         :remote? t
                         :server-id 'clangd-remote))
-      (lsp-mlir-setup)
-      (lsp-tblgen-setup)
-
       (add-hook 'lsp-mode-hook #'lsp-headerline-breadcrumb-mode)
 
       (setq lsp-inlay-hint-enable t)
