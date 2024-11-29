@@ -20,9 +20,9 @@
 ;;
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
-;;
+
 (setq
- my-font-size 26
+ my-font-size 22
  ;; doom-font (font-spec :family "RecursiveMnLnrSt Nerd Font" :size my-font-size :weight 'medium)
  doom-font (font-spec :family "MonacoLigaturized Nerd Font Mono" :size my-font-size)
  ;; doom-font (font-spec :family "MonoLisaNasy Nerd Font" :size my-font-size)
@@ -31,6 +31,7 @@
  ;; doom-font (font-spec :family "CMUTypewriter Nerd Font Text" :size my-font-size)
  ;; doom-font (font-spec :family "BigBlue_TerminalPlus Nerd Font Mono" :size my-font-size)
  ;; doom-variable-pitch-font (font-spec :family "CaskaydiaCove Nerd Font" :size my-font-size :weight 'semilight)
+ doom-serif-font (font-spec :family "Consolas" :size my-font-size)
  doom-unicode-font (font-spec :family  "Noto Color Emoji" :size my-font-size)
  doom-variable-pitch-font (font-spec :family "Sarasa Gothic SC" :size my-font-size))
 
@@ -40,9 +41,26 @@
     ;; (set-fontset-font t charset (font-spec :family "Noto Serif CJK SC"))
     ;; (set-fontset-font t charset (font-spec :family "LXGW Neo ZhiSong"))
     (set-fontset-font t charset (font-spec :family "LXGW Neo ZhiSong")))
-  (set-fontset-font t '(#xF0000 . #xF1000) (font-spec :family "98WB-0")))
+
+  (set-fontset-font t '(#xF0000 . #xF1000) (font-spec :family "98WB-0"))
+
+  ;; some unicode font would be covered.
+  (cl-loop for font in '("Apple Color Emoji"
+                         "Noto Color Emoji"
+                         "Twemoji"
+                         "Noto Emoji"
+                         "Segoe UI Emoji"
+                         "Symbola")
+           when (find-font (font-spec :name font))
+           return (set-fontset-font
+                   t
+                   'unicode
+                   (font-spec :family font
+                              :size my-font-size)
+                   nil 'prepend)))
 
 (add-hook! 'after-setting-font-hook #'my-cjk-font)
+
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -138,6 +156,31 @@
 (setq warning-minimum-level :error)
 (setq-default tab-width 4)
 
+(push '(?. "。.") evil-snipe-aliases)
+(push '(?, "，,") evil-snipe-aliases)
+(push '(?\[ "【[「『〖") evil-snipe-aliases)
+(push '(?\] "】]」』〗") evil-snipe-aliases)
+(push '(?/ "、/\\") evil-snipe-aliases)
+
+(after! avy
+  (defun my/avy-goto-char-timer (&optional arg)
+    (interactive "P")
+    (let ((avy-all-windows (if arg
+                               (not avy-all-windows)
+                             avy-all-windows)))
+      (avy-with avy-goto-char-timer
+        (setq avy--old-cands (avy--read-candidates
+                              'rime-regexp-build-regexp-string))
+        (avy-process avy--old-cands))))
+  (advice-add #'avy-goto-char-timer :override #'my/avy-goto-char-timer))
+
+(define-key evil-snipe-parent-transient-map (kbd "C-;")
+  (evilem-create 'evil-snipe-repeat
+                 :bind ((evil-snipe-scope 'buffer)
+                        (evil-snipe-enable-highlight)
+                        (evil-snipe-enable-incremental-highlight))))
+
+
 (after! tramp
   (setq-default explicit-shell-file-name "/bin/zsh")
   (setq-default shell-file-name "/bin/zsh")
@@ -149,10 +192,37 @@
   (setq projectile-fd-executable "fd")
   (setq projectile-indexing-method 'alien))
 
+(use-package! activity-watch-mode
+  :config
+  (global-activity-watch-mode))
+
 (use-package! exec-path-from-shell
   :config
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
+
+(use-package edit-server
+  :ensure t
+  :commands edit-server-start
+  :init (if after-init-time
+              (edit-server-start)
+            (add-hook 'after-init-hook
+                      #'(lambda() (edit-server-start))))
+  :config (setq edit-server-new-frame-alist
+                '((name . "Edit with Emacs FRAME")
+                  (top . 200)
+                  (left . 200)
+                  (width . 80)
+                  (height . 25)
+                  (minibuffer . t)
+                  (menu-bar-lines . t)
+                  (window-system . x))))
+
+(use-package! kkp
+  :config
+  (global-kkp-mode 1)
+  ;; fix `^[' doesn't treated as escape
+  (define-key key-translation-map (kbd "C-[") (kbd "<escape>")))
 
 (use-package gptel
   :config
@@ -228,10 +298,6 @@
 
 (use-package! csv-mode
   :init (require 'csv-mode))
-
-(if (executable-find "google-chrome-stable")
-    (setq browse-url-browser-function 'browse-url-chrome)
-  (setq browse-url-browser-function 'browse-url-firefox))
 
 ;; (add-hook! 'doom-first-input-hook
 ;;   (setq evil-insert-state-cursor 'bar))
@@ -725,6 +791,7 @@
 (use-package! clipetty
   :config
   (global-clipetty-mode))
+
 ;; (defun +pixel-scroll-interpolate-down (&optional lines)
 ;;   (interactive)
 ;;   (if lines
@@ -750,52 +817,15 @@
 ;;               evil-visual-state-map
 ;;               evil-insert-state-map)))
 
-;; ;; From https://unix.stackexchange.com/a/681480 to specify if on wayland or on xorg
-;; (defun my/tty-clipboard-configure ()
-;;   (use-package xclip
-;;     :disabled t
-;;     :config
-;;     (xclip-mode -1))
+;; https://github.com/Crandel/home/blob/master/.config/emacs/recipes/base-rcp.el#L351)
+;; From https://unix.stackexchange.com/a/681480 to specify if on wayland or on xorg
+(defun my/tty-clipboard-configure ()
+  (use-package xclip
+    :disabled t
+    :config
+    (xclip-mode -1))
 
-;; ;; https://github.com/Crandel/home/blob/master/.config/emacs/recipes/base-rcp.el#L351)
-;; (use-package select
-;;   :custom
-;;   (save-interprogram-paste-before-kill t)
-;;   (select-enable-clipboard             t)
-;;   (selection-coding-system             'utf-8)
-;;   :init
-;;   (setq-default my/copy-process nil)
-;;   ;; (when (string-prefix-p "wayland" (getenv "WAYLAND_DISPLAY"))
-;;   ;;   (defun wl-copy-handler (text)
-;;   ;;     (setq wl-copy-process (make-process :name "wl-copy"
-;;   ;;                                         :buffer nil
-;;   ;;                                         :command '("wl-copy" "-f" "-n")
-;;   ;;                                         :connection-type 'pipe))
-;;   ;;     (process-send-string wl-copy-process text)
-;;   ;;     (process-send-eof wl-copy-process))
-;;   ;;   (defun wl-paste-handler ()
-;;   ;;     (if (and wl-copy-process (process-live-p wl-copy-process))
-;;   ;;         nil ; should return nil if we're the current paste owner
-;;   ;;       (shell-command-to-string "wl-paste -n | tr -d '\r'")))
-;;   ;;   (setq interprogram-cut-function 'wl-copy-handler
-;;   ;;         interprogram-paste-function 'wl-paste-handler))
-;;   (defun my/copy-handler (text)
-;;     (setq my/copy-process (make-process :name "my/copy"
-;;                                         :buffer nil
-;;                                         :command '("~/.local/bin/clip.py" "copy")
-;;                                         :connection-type 'pipe))
-;;     (process-send-string my/copy-process text)
-;;     (process-send-eof my/copy-process))
-;;   (defun my/paste-handler ()
-;;     (if (and my/copy-process (process-live-p my/copy-process))
-;;         nil ; should return nil if we're the current paste owner
-;;       (shell-command-to-string "~/.local/bin/clip.py paste | tr -d '\r'")))
-;;   (setq interprogram-cut-function 'my/copy-handler
-;;         interprogram-paste-function 'my/paste-handler))
 
-;; (if (daemonp)
-;;     (my/tty-clipboard-configure)
-;;   (add-hook! 'doom-first-file-hook #'my/tty-clipboard-configure))
 (use-package! tree-sitter
   :config
   (require 'tree-sitter-langs)

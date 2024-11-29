@@ -60,7 +60,10 @@
 (package! disable-mouse
   :recipe (:host github :repo "purcell/disable-mouse"))
 
-;; (package! ccls :disable t)
+(package! ccls :disable t)
+(package! activity-watch-mode)
+(package! alert)
+(package! edit-server)
 
 (package! gptel)
 (package! toc-org)
