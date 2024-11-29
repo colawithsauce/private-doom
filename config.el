@@ -156,11 +156,12 @@
 (setq warning-minimum-level :error)
 (setq-default tab-width 4)
 
-(push '(?. "。.") evil-snipe-aliases)
-(push '(?, "，,") evil-snipe-aliases)
-(push '(?\[ "【[「『〖") evil-snipe-aliases)
-(push '(?\] "】]」』〗") evil-snipe-aliases)
-(push '(?/ "、/\\") evil-snipe-aliases)
+(after! evil-snipe
+  (push '(?. "。.") evil-snipe-aliases)
+  (push '(?, "，,") evil-snipe-aliases)
+  (push '(?\[ "【[「『〖") evil-snipe-aliases)
+  (push '(?\] "】]」』〗") evil-snipe-aliases)
+  (push '(?/ "、/\\") evil-snipe-aliases))
 
 (after! avy
   (defun my/avy-goto-char-timer (&optional arg)
@@ -169,16 +170,17 @@
                                (not avy-all-windows)
                              avy-all-windows)))
       (avy-with avy-goto-char-timer
-        (setq avy--old-cands (avy--read-candidates
-                              'rime-regexp-build-regexp-string))
-        (avy-process avy--old-cands))))
-  (advice-add #'avy-goto-char-timer :override #'my/avy-goto-char-timer))
+                (setq avy--old-cands (avy--read-candidates
+                                      'rime-regexp-build-regexp-string))
+                (avy-process avy--old-cands))))
+  (advice-add #'avy-goto-char-timer :override #'my/avy-goto-char-timer)
 
-(define-key evil-snipe-parent-transient-map (kbd "C-;")
-  (evilem-create 'evil-snipe-repeat
-                 :bind ((evil-snipe-scope 'buffer)
-                        (evil-snipe-enable-highlight)
-                        (evil-snipe-enable-incremental-highlight))))
+  (define-key evil-snipe-parent-transient-map (kbd "C-;")
+              (evilem-create 'evil-snipe-repeat
+                             :bind ((evil-snipe-scope 'buffer)
+                                    (evil-snipe-enable-highlight)
+                                    (evil-snipe-enable-incremental-highlight)))))
+
 
 
 (after! tramp
@@ -205,9 +207,9 @@
   :ensure t
   :commands edit-server-start
   :init (if after-init-time
-              (edit-server-start)
-            (add-hook 'after-init-hook
-                      #'(lambda() (edit-server-start))))
+            (edit-server-start)
+          (add-hook 'after-init-hook
+                    #'(lambda() (edit-server-start))))
   :config (setq edit-server-new-frame-alist
                 '((name . "Edit with Emacs FRAME")
                   (top . 200)
@@ -539,10 +541,10 @@
                    (mlir-mode . ("mlir-lsp-server" "--color"))
                    (tablegen-mode . ("tblgen-lsp-server" "--color"))
                    ((rust-mode rust-ts-mode rustic-mode)
-                     . ("rust-analyzer" :initializationOptions
-                        (:cargo (:allFeatures t :allTargets t :features "full")
-                         :checkOnSave :json-false
-                         :diagnostics (:enable :json-false))))))
+                    . ("rust-analyzer" :initializationOptions
+                       (:cargo (:allFeatures t :allTargets t :features "full")
+                        :checkOnSave :json-false
+                        :diagnostics (:enable :json-false))))))
           (add-to-list 'eglot-server-programs server-config))
         (use-package! breadcrumb
           :config
@@ -819,12 +821,6 @@
 
 ;; https://github.com/Crandel/home/blob/master/.config/emacs/recipes/base-rcp.el#L351)
 ;; From https://unix.stackexchange.com/a/681480 to specify if on wayland or on xorg
-(defun my/tty-clipboard-configure ()
-  (use-package xclip
-    :disabled t
-    :config
-    (xclip-mode -1))
-
 
 (use-package! tree-sitter
   :config
@@ -899,7 +895,6 @@
            #'tree-sitter-hl-mode
            #'font-lock-update
            #'lsp!)
-
 ;; ;; This is an Emacs package that creates graphviz directed graphs from
 ;; ;; the headings of an org file
 ;; (use-package org-mind-map
