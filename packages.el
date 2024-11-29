@@ -60,7 +60,7 @@
 (package! disable-mouse
   :recipe (:host github :repo "purcell/disable-mouse"))
 
-(package! ccls :disable t)
+;; (package! ccls :disable t)
 
 (package! gptel)
 (package! toc-org)
@@ -74,6 +74,7 @@
 (package! tree-sitter)
 (package! tree-sitter-langs)
 
+(package! clipetty)
 ;; (package! xclip :disable t)
 
 ;; (when (package! lsp-bridge
@@ -133,7 +134,7 @@
 (package! todoist)
 (package! org-excalidraw
   :recipe (:host github
-                 :repo "wdavew/org-excalidraw"))
+           :repo "wdavew/org-excalidraw"))
 
 (package! ts)
 (package! esxml)

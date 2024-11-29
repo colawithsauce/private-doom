@@ -61,7 +61,7 @@
 (setq fancy-splash-image (expand-file-name "assets/Ubuntu.png" doom-user-dir))
 
 (setq vscode-dark-plus-box-org-todo nil) ;; for emacs 30
-(setq doom-theme 'modus-vivendi)
+(setq doom-theme 'ef-elea-dark)
 ;; (add-to-list 'default-frame-alist '(alpha-background . 89))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -156,16 +156,46 @@
 
 (use-package gptel
   :config
-  (setq gptel-model "deepseek-coder"
+  (setq gptel-model "deepseek-ai/DeepSeek-V2.5"
         gptel-default-mode 'org-mode
         gptel-use-curl t
         gptel-backend
-        (gptel-make-openai "DeepSeek"
+        (gptel-make-openai "Silicon Flow"
           :stream t
           :key 'gptel-api-key
-          :models '("deepseek-chat"
-                    "deepseek-coder")
-          :host "api.deepseek.com"))
+          :models '("deepseek-ai/DeepSeek-V2.5" "deepseek-ai/DeepSeek-V2-Chat"
+                    "Tencent/Hunyuan-A52B-Instruct" "Qwen/Qwen2.5-72B-Instruct-128K"
+                    "Qwen/Qwen2.5-72B-Instruct" "Qwen/Qwen2-VL-72B-Instruct"
+                    "Qwen/Qwen2.5-32B-Instruct" "Qwen/Qwen2.5-14B-Instruct"
+                    "Qwen/Qwen2.5-7B-Instruct" "Qwen/Qwen2.5-Math-72B-Instruct"
+                    "Qwen/Qwen2.5-Coder-32B-Instruct" "Qwen/Qwen2.5-Coder-7B-Instruct"
+                    "Qwen/Qwen2-72B-Instruct" "Qwen/Qwen2-7B-Instruct"
+                    "Qwen/Qwen2-1.5B-Instruct" "TeleAI/TeleChat2"
+                    "TeleAI/TeleMM" "01-ai/Yi-1.5-34B-Chat-16K"
+                    "01-ai/Yi-1.5-9B-Chat-16K" "01-ai/Yi-1.5-6B-Chat"
+                    "THUDM/glm-4-9b-chat" "Vendor-A/Qwen/Qwen2-72B-Instruct"
+                    "Vendor-A/Qwen/Qwen2.5-72B-Instruct" "internlm/internlm2_5-7b-chat"
+                    "internlm/internlm2_5-20b-chat" "OpenGVLab/InternVL2-Llama3-76B"
+                    "OpenGVLab/InternVL2-26B" "nvidia/Llama-3.1-Nemotron-70B-Instruct"
+                    "meta-llama/Meta-Llama-3.1-405B-Instruct" "meta-llama/Meta-Llama-3.1-70B-Instruct"
+                    "meta-llama/Meta-Llama-3.1-8B-Instruct" "google/gemma-2-27b-it"
+                    "google/gemma-2-9b-it" "Pro/Qwen/Qwen2.5-7B-Instruct"
+                    "Pro/Qwen/Qwen2-7B-Instruct" "Pro/Qwen/Qwen2-1.5B-Instruct"
+                    "Pro/Qwen/Qwen2-VL-7B-Instruct" "Pro/THUDM/chatglm3-6b"
+                    "Pro/THUDM/glm-4-9b-chat" "Pro/OpenGVLab/InternVL2-8B"
+                    "Pro/meta-llama/Meta-Llama-3.1-8B-Instruct" "Pro/google/gemma-2-9b-it" )
+          :host "api.siliconflow.cn"))
+
+  ;; (setq gptel-model "deepseek-coder"
+  ;;       gptel-default-mode 'org-mode
+  ;;       gptel-use-curl t
+  ;;       gptel-backend
+  ;;       (gptel-make-openai "DeepSeek"
+  ;;         :stream t
+  ;;         :key 'gptel-api-key
+  ;;         :models '("deepseek-chat"
+  ;;                   "deepseek-coder")
+  ;;         :host "api.deepseek.com"))
 
   ;; (setq gptel-model "o1-mini"
   ;;       gptel-default-mode 'org-mode
@@ -238,21 +268,21 @@
     (org-display-remote-inline-images 'cache))
 
   (use-package! org-download
-      :config
-      (setenv "XDG_SESSION_TYPE" "wayland")
-      (after! org-download
+    :config
+    (setenv "XDG_SESSION_TYPE" "wayland")
+    (after! org-download
       ;;; 修复 WSL 下粘贴剪贴板中的图片错误
-        (defun org-download-clipboard (&optional basename)
-          "Capture the image from the clipboard and insert the resulting file."
-          (interactive)
-          (let ((org-download-screenshot-method
-                 (if (executable-find "wl-paste")
-                     "wl-paste -t image/bmp | convert bmp:- %s"
-                   (user-error
-                    "Please install the \"wl-paste\" program included in wl-clipboard"))))
-            (org-download-screenshot basename))))
-      :custom
-      (org-download-screenshot-method "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\""))
+      (defun org-download-clipboard (&optional basename)
+        "Capture the image from the clipboard and insert the resulting file."
+        (interactive)
+        (let ((org-download-screenshot-method
+               (if (executable-find "wl-paste")
+                   "wl-paste -t image/bmp | convert bmp:- %s"
+                 (user-error
+                  "Please install the \"wl-paste\" program included in wl-clipboard"))))
+          (org-download-screenshot basename))))
+    :custom
+    (org-download-screenshot-method "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\""))
 
   (use-package org-protocol
     :config
@@ -325,10 +355,10 @@
 (use-package vterm
   :commands #'vterm
   :custom
-  (vterm-shell "/usr/bin/bash")
-  (vterm-tramp-shells '(("docker" "/bin/bash")
-                        ("sshx" "/bin/bash")
-                        ("ssh" "/bin/bash"))))
+  (vterm-shell "/usr/bin/zsh")
+  (vterm-tramp-shells '(("docker" "/bin/zsh")
+                        ("sshx" "/bin/zsh")
+                        ("ssh" "/bin/zsh"))))
 
 (after! org-roam
   ;; Setting default filename of new roam node.
@@ -535,21 +565,21 @@
     :config (eglot-booster-mode)))
 
 ;; accept completion from copilot and fallback to company
-(use-package! copilot
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-              ("<tab>" . 'copilot-accept-completion)
-              ("TAB" . 'copilot-accept-completion)
-              ("C-TAB" . 'copilot-accept-completion-by-word)
-              ("C-<tab>" . 'copilot-accept-completion-by-word)
-              ("C-n" . 'copilot-next-completion)
-              ("C-p" . 'copilot-previous-completion))
-  :config
-  (add-to-list 'copilot-indentation-alist '(prog-mode 2))
-  (add-to-list 'copilot-indentation-alist '(org-mode 2))
-  (add-to-list 'copilot-indentation-alist '(text-mode 2))
-  (add-to-list 'copilot-indentation-alist '(closure-mode 2))
-  (add-to-list 'copilot-indentation-alist '(emacs-lisp-mode 2)))
+;; (use-package! copilot
+;;   :hook (prog-mode . copilot-mode)
+;;   :bind (:map copilot-completion-map
+;;               ("<tab>" . 'copilot-accept-completion)
+;;               ("TAB" . 'copilot-accept-completion)
+;;               ("C-TAB" . 'copilot-accept-completion-by-word)
+;;               ("C-<tab>" . 'copilot-accept-completion-by-word)
+;;               ("C-n" . 'copilot-next-completion)
+;;               ("C-p" . 'copilot-previous-completion))
+;;   :config
+;;   (add-to-list 'copilot-indentation-alist '(prog-mode 2))
+;;   (add-to-list 'copilot-indentation-alist '(org-mode 2))
+;;   (add-to-list 'copilot-indentation-alist '(text-mode 2))
+;;   (add-to-list 'copilot-indentation-alist '(closure-mode 2))
+;;   (add-to-list 'copilot-indentation-alist '(emacs-lisp-mode 2)))
 
 (when (featurep 'lsp-bridge)
   (use-package! lsp-bridge
@@ -562,7 +592,7 @@
           acm-enable-codeium nil
           acm-enable-search-file-words nil
           acm-enable-tabnine nil
-          acm-enable-copilot t
+          acm-enable-copilot nil
           lsp-bridge-enable-with-tramp nil
           lsp-bridge-python-command "pypy3"
           ;; lsp-bridge-c-lsp-server "ccls"
@@ -692,6 +722,9 @@
 ;; Pixel scrolling
 (pixel-scroll-precision-mode 1)
 (setq pixel-scroll-precision-interpolate-page t)
+(use-package! clipetty
+  :config
+  (global-clipetty-mode))
 ;; (defun +pixel-scroll-interpolate-down (&optional lines)
 ;;   (interactive)
 ;;   (if lines
@@ -724,28 +757,41 @@
 ;;     :config
 ;;     (xclip-mode -1))
 
-;;   ;; https://github.com/Crandel/home/blob/master/.config/emacs/recipes/base-rcp.el#L351)
-;;   (use-package select
-;;     :custom
-;;     (save-interprogram-paste-before-kill t)
-;;     (select-enable-clipboard             t)
-;;     (selection-coding-system             'utf-8)
-;;     :init
-;;     (setq-default wl-copy-process nil)
-;;     (when (string-prefix-p "wayland" (getenv "WAYLAND_DISPLAY"))
-;;       (defun wl-copy-handler (text)
-;;         (setq wl-copy-process (make-process :name "wl-copy"
-;;                                             :buffer nil
-;;                                             :command '("wl-copy" "-f" "-n")
-;;                                             :connection-type 'pipe))
-;;         (process-send-string wl-copy-process text)
-;;         (process-send-eof wl-copy-process))
-;;       (defun wl-paste-handler ()
-;;         (if (and wl-copy-process (process-live-p wl-copy-process))
-;;             nil ; should return nil if we're the current paste owner
-;;           (shell-command-to-string "wl-paste -n | tr -d '\r'")))
-;;       (setq interprogram-cut-function 'wl-copy-handler
-;;             interprogram-paste-function 'wl-paste-handler))))
+;; ;; https://github.com/Crandel/home/blob/master/.config/emacs/recipes/base-rcp.el#L351)
+;; (use-package select
+;;   :custom
+;;   (save-interprogram-paste-before-kill t)
+;;   (select-enable-clipboard             t)
+;;   (selection-coding-system             'utf-8)
+;;   :init
+;;   (setq-default my/copy-process nil)
+;;   ;; (when (string-prefix-p "wayland" (getenv "WAYLAND_DISPLAY"))
+;;   ;;   (defun wl-copy-handler (text)
+;;   ;;     (setq wl-copy-process (make-process :name "wl-copy"
+;;   ;;                                         :buffer nil
+;;   ;;                                         :command '("wl-copy" "-f" "-n")
+;;   ;;                                         :connection-type 'pipe))
+;;   ;;     (process-send-string wl-copy-process text)
+;;   ;;     (process-send-eof wl-copy-process))
+;;   ;;   (defun wl-paste-handler ()
+;;   ;;     (if (and wl-copy-process (process-live-p wl-copy-process))
+;;   ;;         nil ; should return nil if we're the current paste owner
+;;   ;;       (shell-command-to-string "wl-paste -n | tr -d '\r'")))
+;;   ;;   (setq interprogram-cut-function 'wl-copy-handler
+;;   ;;         interprogram-paste-function 'wl-paste-handler))
+;;   (defun my/copy-handler (text)
+;;     (setq my/copy-process (make-process :name "my/copy"
+;;                                         :buffer nil
+;;                                         :command '("~/.local/bin/clip.py" "copy")
+;;                                         :connection-type 'pipe))
+;;     (process-send-string my/copy-process text)
+;;     (process-send-eof my/copy-process))
+;;   (defun my/paste-handler ()
+;;     (if (and my/copy-process (process-live-p my/copy-process))
+;;         nil ; should return nil if we're the current paste owner
+;;       (shell-command-to-string "~/.local/bin/clip.py paste | tr -d '\r'")))
+;;   (setq interprogram-cut-function 'my/copy-handler
+;;         interprogram-paste-function 'my/paste-handler))
 
 ;; (if (daemonp)
 ;;     (my/tty-clipboard-configure)
@@ -776,10 +822,10 @@
 (use-package cmake-ts-mode
   :config
   (add-hook 'cmake-ts-mode-hook
-    (defun setup-neocmakelsp ()
-      (require 'eglot)
-      (add-to-list 'eglot-server-programs `((cmake-ts-mode) . ("neocmakelsp" "--stdio")))
-      (eglot-ensure))))
+            (defun setup-neocmakelsp ()
+              (require 'eglot)
+              (add-to-list 'eglot-server-programs `((cmake-ts-mode) . ("neocmakelsp" "--stdio")))
+              (eglot-ensure))))
 
 ;;; mail
 (setq smtpmail-smtp-server "smtp.qq.com" ;; <-- edit this !!!
@@ -821,7 +867,8 @@
 (add-hook! 'tablegen-mode-hook
            #'smartparens-mode #'display-line-numbers-mode
            #'tree-sitter-hl-mode
-           #'font-lock-update)
+           #'font-lock-update
+           #'lsp!)
 
 ;; ;; This is an Emacs package that creates graphviz directed graphs from
 ;; ;; the headings of an org file

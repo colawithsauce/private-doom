@@ -14,6 +14,7 @@
 ;;      Alternatively, press 'gd' (or 'C-c c d') on a module to browse its
 ;;      directory (for easy access to its source code).
 
+(setenv "LSP_USE_PLISTS" "1")
 (doom! :input
        ;;bidi              ; (tfel ot) thgir etirw uoy gnipleh
        ;;chinese
@@ -59,7 +60,7 @@
        (evil +everywhere); come to the dark side, we have cookies
        file-templates    ; auto-snippets for empty files
        fold              ; (nigh) universal code folding
-       (format -onsave)  ; automated prettiness
+       (format +onsave)  ; automated prettiness
        ;;god               ; run Emacs commands without modifier keys
        ;;lispy             ; vim for lisp, for people who don't like vim
        multiple-cursors  ; editing in many places at once
@@ -83,7 +84,8 @@
        vterm             ; the best terminal emulation in Emacs
 
        :checkers
-       ;; (syntax -flymake)              ; tasing you for every semicolon you forget
+       (syntax -flymake
+               -icons)              ; tasing you for every semicolon you forget
        ;; (spell -flyspell
        ;;        +hunspell) ; tasing you for misspelling mispelling
        ;;grammar           ; tasing grammar mistake every you make
@@ -100,8 +102,8 @@
        ;;gist              ; interacting with github gists
        (lookup +dictionary
                -offline)              ; navigate your code and its documentation
-       (lsp +peek
-            +eglot)               ; M-x vscode
+       (lsp -peek
+            -eglot)               ; M-x vscode
        (magit +forge)             ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
        ;;pass              ; password manager for nerds
