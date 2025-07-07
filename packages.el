@@ -164,6 +164,7 @@
 (package! cal-china-x)
 
 (package! ox-pandoc)
+(package! kdl-mode)
 
 ;; (when (modulep! :tools lsp +eglot)
 ;;   (unpin! eglot))

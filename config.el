@@ -22,9 +22,10 @@
 ;; accept. For example:
 
 (setq
- my-font-size 22
+ my-font-size 28
  ;; doom-font (font-spec :family "RecursiveMnLnrSt Nerd Font" :size my-font-size :weight 'medium)
- doom-font (font-spec :family "MonacoLigaturized Nerd Font Mono" :size my-font-size)
+ ;; doom-font (font-spec :family "MonacoLigaturized Nerd Font Mono" :size my-font-size)
+ doom-font (font-spec :family "UbuntuMono Nerd Font" :size my-font-size)
  ;; doom-font (font-spec :family "MonoLisaNasy Nerd Font" :size my-font-size)
  ;; doom-font (font-spec :family "CommitMono" :size my-font-size)
  ;; doom-font (font-spec :family "Maple Mono NF" :size my-font-size)
@@ -42,7 +43,8 @@
     ;; (set-fontset-font t charset (font-spec :family "LXGW Neo ZhiSong"))
     (set-fontset-font t charset (font-spec :family "LXGW Neo ZhiSong")))
 
-  (set-fontset-font t '(#xF0000 . #xF1000) (font-spec :family "98WB-0"))
+  ;; (set-fontset-font t '(#xF0000 . #xF0170) (font-spec :family "98WB-2"))
+  (add-to-list 'face-font-rescale-alist '("LXGW Neo ZhiSong" . 0.9))
 
   ;; some unicode font would be covered.
   (cl-loop for font in '("Apple Color Emoji"
@@ -97,12 +99,12 @@
   (map! :desc "Open todoist" :nvie "<f9>" #'todoist)
   (map! :mode 'todoist-mode :desc "Close todoist" :nvie "<f9>" #'evil-delete-buffer))
 
-;; (setq url-gateway-local-host-regexp
-;;       (concat "\\`" (regexp-opt '("localhost" "127.0.0.1")) "\\'"))
-;; (setq url-proxy-services
-;;       '(("no_proxy" . "^\\(localhost\\|10\\..*\\|192\\.168\\..*\\)")
-;;         ("http" . "127.0.0.1:7890")
-;;         ("https" . "127.0.0.1:7890")))
+(setq url-gateway-local-host-regexp
+      (concat "\\`" (regexp-opt '("localhost" "127.0.0.1")) "\\'"))
+(setq url-proxy-services
+      '(("no_proxy" . "^\\(localhost\\|10\\..*\\|192\\.168\\..*\\)")
+        ("http" . "127.0.0.1:12334")
+        ("https" . "127.0.0.1:12334")))
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
@@ -170,9 +172,9 @@
                                (not avy-all-windows)
                              avy-all-windows)))
       (avy-with avy-goto-char-timer
-                (setq avy--old-cands (avy--read-candidates
-                                      'rime-regexp-build-regexp-string))
-                (avy-process avy--old-cands))))
+        (setq avy--old-cands (avy--read-candidates
+                              'rime-regexp-build-regexp-string))
+        (avy-process avy--old-cands))))
   (advice-add #'avy-goto-char-timer :override #'my/avy-goto-char-timer)
 
   (define-key evil-snipe-parent-transient-map (kbd "C-;")
@@ -184,9 +186,9 @@
 
 
 (after! tramp
-  (setq-default explicit-shell-file-name "/bin/zsh")
-  (setq-default shell-file-name "/bin/zsh")
-  (setq-default tramp-default-remote-shell "/bin/zsh")
+  (setq-default explicit-shell-file-name "/bin/bash")
+  (setq-default shell-file-name "/bin/bash")
+  (setq-default tramp-default-remote-shell "/bin/bash")
   (setq enable-remote-dir-locals t))
 
 (after! projectile
@@ -423,10 +425,10 @@
 (use-package vterm
   :commands #'vterm
   :custom
-  (vterm-shell "/usr/bin/zsh")
-  (vterm-tramp-shells '(("docker" "/bin/zsh")
-                        ("sshx" "/bin/zsh")
-                        ("ssh" "/bin/zsh"))))
+  (vterm-shell "/usr/bin/bash")
+  (vterm-tramp-shells '(("docker" "/bin/bash")
+                        ("sshx" "/bin/bash")
+                        ("ssh" "/bin/bash"))))
 
 (after! org-roam
   ;; Setting default filename of new roam node.
@@ -474,44 +476,44 @@
 (add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
 ;; (setq gud-gdb-command-name "cuda-gdb annotate=3")
 
-;; CPP style
-(when (modulep! :lang cc)
-  (after! cc-mode
-    (c-add-style
-     "cc" '((c-comment-only-line-offset . 0)
-            (c-hanging-braces-alist (brace-list-open)
-                                    (brace-entry-open)
-                                    (substatement-open after)
-                                    (block-close . c-snug-do-while)
-                                    (arglist-cont-nonempty))
-            (c-cleanup-list brace-else-brace)
-            (c-offsets-alist
-             (knr-argdecl-intro . 0)
-             (substatement-open . 0)
-             (substatement-label . 0)
-             (statement-cont . +)
-             (case-label . 0)
-             ;; align args with open brace OR don't indent at all (if open
-             ;; brace is at eolp and close brace is after arg with no trailing
-             ;; comma)
-             (brace-list-intro . 0)
-             (brace-list-close . -)
-             (arglist-intro . +)
-             (arglist-close +cc-lineup-arglist-close 0)
-             ;; don't over-indent lambda blocks
-             (inline-open . 0)
-             (inlambda . 0)
-             (innamespace . [0])
-             ;; indent access keywords +1 level, and properties beneath them
-             ;; another level
-             (access-label . [0])
-             ;; (inclass +cc-c++-lineup-inclass +)
-             (inclass +)
-             (label . 0))))
+;; ;; CPP style
+;; (when (modulep! :lang cc)
+;;   (after! cc-mode
+;;     (c-add-style
+;;      "cc" '((c-comment-only-line-offset . 0)
+;;             (c-hanging-braces-alist (brace-list-open)
+;;                                     (brace-entry-open)
+;;                                     (substatement-open after)
+;;                                     (block-close . c-snug-do-while)
+;;                                     (arglist-cont-nonempty))
+;;             (c-cleanup-list brace-else-brace)
+;;             (c-offsets-alist
+;;              (knr-argdecl-intro . 0)
+;;              (substatement-open . 0)
+;;              (substatement-label . 0)
+;;              (statement-cont . +)
+;;              (case-label . 0)
+;;              ;; align args with open brace OR don't indent at all (if open
+;;              ;; brace is at eolp and close brace is after arg with no trailing
+;;              ;; comma)
+;;              (brace-list-intro . 0)
+;;              (brace-list-close . -)
+;;              (arglist-intro . +)
+;;              (arglist-close +cc-lineup-arglist-close 0)
+;;              ;; don't over-indent lambda blocks
+;;              (inline-open . 0)
+;;              (inlambda . 0)
+;;              (innamespace . [0])
+;;              ;; indent access keywords +1 level, and properties beneath them
+;;              ;; another level
+;;              (access-label . [0])
+;;              ;; (inclass +cc-c++-lineup-inclass +)
+;;              (inclass +)
+;;              (label . 0))))
 
-    (when (listp c-default-style)
-      (setf (alist-get 'c-mode c-default-style) "cc")
-      (setf (alist-get 'c++-mode c-default-style) "cc"))))
+;;     (when (listp c-default-style)
+;;       (setf (alist-get 'c-mode c-default-style) "cc")
+;;       (setf (alist-get 'c++-mode c-default-style) "cc"))))
 
 ;; Tramp
 (use-package tramp-container
@@ -525,6 +527,7 @@
   (if (modulep! :tools lsp +eglot)
       ;; eglot was enable
       (after! eglot
+        (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
         (dolist (server-config
                  '(((c-mode c++-mode)
                     . ("clangd"
@@ -557,11 +560,11 @@
         ;; (setq lsp-clients-clangd-executable (shell-command-to-string "which clangd | tr -d '\n'"))
         (add-to-list 'lsp-clients-clangd-args "--header-insertion=never"))
 
-      (lsp-register-client
-       (make-lsp-client :new-connection (lsp-tramp-connection "clangd")
-                        :major-modes '(c-mode c++-mode)
-                        :remote? t
-                        :server-id 'clangd-remote))
+      ;; (lsp-register-client
+      ;;  (make-lsp-client :new-connection (lsp-tramp-connection "clangd")
+      ;;                   :major-modes '(c-mode c++-mode)
+      ;;                   :remote? t
+      ;;                   :server-id 'clangd-remote))
       (add-hook 'lsp-mode-hook #'lsp-headerline-breadcrumb-mode)
 
       (setq lsp-inlay-hint-enable t)
@@ -767,7 +770,7 @@
 (use-package! leetcode
   :commands 'leetcode
   :config
-  (setq leetcode-prefer-language "rust")
+  (setq leetcode-prefer-language "cpp")
   (setq leetcode-save-solutions t)
   (setq leetcode-directory "~/.leetcode"))
 
